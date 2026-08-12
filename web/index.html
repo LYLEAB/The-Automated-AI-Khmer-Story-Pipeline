@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="km" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khmer Story Pipeline — AI Video Generator</title>
+  <meta name="description" content="Automated AI pipeline that turns Khmer story prompts into cinematic social media videos for TikTok and Facebook Reels." />
+  <meta property="og:title" content="Khmer Story Pipeline" />
+  <meta property="og:description" content="Generate cinematic Khmer story videos with AI in minutes." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Fonts preloaded for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-logo">
+    <div class="logo-icon" aria-hidden="true">🎬</div>
+    <h1>Khmer Story Pipeline</h1>
+    <span class="nav-badge">AI POWERED</span>
+  </div>
+  <div class="nav-links">
+    <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline"
+       target="_blank" rel="noopener" class="nav-link" id="nav-github">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+      </svg>
+      GitHub
+    </a>
+    <a href="#" class="nav-link" id="nav-docs">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/>
+      </svg>
+      Docs
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────── -->
+<section id="hero" aria-label="Hero section">
+  <div class="hero-eyebrow" aria-hidden="true">
+    <span>✨</span> Automated AI Content Creation
+  </div>
+  <h2 class="hero-title">Turn Stories Into Viral Videos</h2>
+  <p class="hero-subtitle">
+    Paste a Khmer story or let AI generate one — then watch the pipeline
+    create a cinematic video ready for TikTok and Facebook Reels.
+  </p>
+  <p class="hero-khmer" lang="km">ប្រែក្លាយរឿងខ្មែររបស់អ្នកទៅជាវីដេអូ AI ដ៏គួរឱ្យចាប់អារម្មណ៍</p>
+</section>
+
+<!-- ── MAIN CONTENT ───────────────────────────────────────────── -->
+<main id="main-content">
+
+  <!-- INPUT + SETTINGS (default view) -->
+  <div id="input-view">
+    <div class="two-col">
+
+      <!-- LEFT: Input Panel -->
+      <div id="input-panel" class="glass glass-gold">
+        <p class="panel-title">Story Input</p>
+
+        <!-- Mode Tabs -->
+        <div class="mode-tabs" role="tablist" aria-label="Story input mode">
+          <button class="mode-tab active" id="tab-paste" role="tab" aria-selected="true" aria-controls="pane-paste">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            ✍️ Paste Story
+          </button>
+          <button class="mode-tab" id="tab-ai" role="tab" aria-selected="false" aria-controls="pane-ai">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            🤖 AI Generate
+          </button>
+        </div>
+
+        <!-- Tab: Paste Story -->
+        <div class="tab-pane active" id="pane-paste" role="tabpanel" aria-labelledby="tab-paste">
+          <label class="field-label" for="story-text">
+            Paste your story below — Khmer or English text accepted
+          </label>
+          <textarea
+            id="story-text"
+            placeholder="ដាក់ស្នៀតរឿងរ៉ាវរបស់អ្នកនៅទីនេះ…&#10;&#10;Paste your Khmer or English story here. Gemini will structure it into scenes automatically."
+            aria-label="Story text input"
+            spellcheck="false"
+          ></textarea>
+          <div style="display:flex; justify-content:space-between; margin-top:8px;">
+            <span style="font-size:12px; color:var(--text-muted);">
+              💡 Gemini will auto-structure this into visual scenes
+            </span>
+            <span id="char-count" style="font-size:12px; color:var(--text-muted);">0 chars</span>
+          </div>
+        </div>
+
+        <!-- Tab: AI Generate -->
+        <div class="tab-pane" id="pane-ai" role="tabpanel" aria-labelledby="tab-ai">
+          <label class="field-label" for="story-prompt">
+            Describe the story you want AI to write
+          </label>
+          <textarea
+            id="story-prompt"
+            placeholder="e.g. រឿងកុលាបប៉ៃលិន — a Khmer princess who discovers a magical rose garden&#10;&#10;Or in English: A brave Khmer warrior who protects his village from a demon king"
+            aria-label="AI story prompt"
+            spellcheck="false"
+          ></textarea>
+
+          <div style="margin-top: 16px;">
+            <label class="field-label">Story Style & Mood</label>
+            <div class="style-chips" role="group" aria-label="Story mood">
+              <button class="style-chip active" data-style="dramatic">🎭 Dramatic</button>
+              <button class="style-chip" data-style="mysterious">🌙 Mysterious</button>
+              <button class="style-chip" data-style="romantic">💕 Romantic</button>
+              <button class="style-chip" data-style="triumphant">⚔️ Heroic</button>
+              <button class="style-chip" data-style="peaceful">🌸 Peaceful</button>
+              <button class="style-chip" data-style="melancholic">🌧 Melancholic</button>
+            </div>
+          </div>
+
+          <button id="btn-preview-story" aria-label="Preview AI generated story scenes">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            Preview Story Scenes First
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Settings Panel -->
+      <div id="settings-panel" class="glass">
+        <p class="panel-title">Pipeline Settings</p>
+
+        <!-- Scene Count -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <label class="slider-label" for="range-scenes">Number of Scenes</label>
+            <span class="slider-value" id="scenes-val">6</span>
+          </div>
+          <input
+            type="range"
+            id="range-scenes"
+            min="3" max="12" value="6" step="1"
+            aria-label="Number of scenes"
+            aria-valuemin="3" aria-valuemax="12" aria-valuenow="6"
+          />
+          <div style="display:flex; justify-content:space-between; margin-top:4px;">
+            <span style="font-size:11px; color:var(--text-muted);">3 (fast)</span>
+            <span style="font-size:11px; color:var(--text-muted);">12 (full story)</span>
+          </div>
+        </div>
+
+        <!-- Export Profile -->
+        <div class="select-group">
+          <label class="field-label" for="sel-profile">Video Export</label>
+          <select id="sel-profile" aria-label="Export profile">
+            <option value="both">📱💻 Both (Mobile + Laptop)</option>
+            <option value="mobile">📱 Mobile Only (9:16 TikTok/Reels)</option>
+            <option value="laptop">💻 Laptop Only (16:9 YouTube)</option>
+          </select>
+        </div>
+
+        <!-- TTS Provider -->
+        <div class="select-group">
+          <label class="field-label" for="sel-tts">🎙️ Voice (TTS Provider)</label>
+          <select id="sel-tts" aria-label="TTS provider">
+            <option value="gtts">gTTS (Free — no key needed)</option>
+            <option value="google_tts">Google Cloud TTS ⭐ Best quality</option>
+            <option value="elevenlabs">ElevenLabs Multilingual</option>
+          </select>
+        </div>
+
+        <!-- Image Provider -->
+        <div class="select-group">
+          <label class="field-label" for="sel-image">🎨 Image Generator</label>
+          <select id="sel-image" aria-label="Image provider">
+            <option value="gemini_imagen">Gemini Imagen 3 ⭐ Best quality</option>
+            <option value="stability_ai">Stability AI / SDXL</option>
+          </select>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- API URL (for deployed backend) -->
+        <div class="select-group">
+          <label class="field-label" for="api-url-input">🌐 Backend API URL</label>
+          <input
+            type="text"
+            id="api-url-input"
+            placeholder="https://your-api.railway.app"
+            aria-label="Backend API URL"
+            style="min-height: unset; resize: none; padding: 10px 14px;"
+          />
+          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">
+            Deploy <code style="color:var(--gold)">api.py</code> to Railway or Render,
+            then paste its URL here.
+          </div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- Generate Button -->
+        <button id="btn-generate" aria-label="Generate video">
+          <div class="btn-shine" aria-hidden="true"></div>
+          🎬 Generate Video
+        </button>
+
+        <!-- Stats row -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:16px; text-align:center;">
+          <div style="padding:12px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm);">
+            <div style="font-size:16px; font-weight:700; color:var(--gold);">~3 min</div>
+            <div style="font-size:10px; color:var(--text-muted);">avg. runtime</div>
+          </div>
+          <div style="padding:12px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm);">
+            <div style="font-size:16px; font-weight:700; color:var(--purple-light);">2</div>
+            <div style="font-size:10px; color:var(--text-muted);">video formats</div>
+          </div>
+          <div style="padding:12px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm);">
+            <div style="font-size:16px; font-weight:700; color:var(--emerald);">5</div>
+            <div style="font-size:10px; color:var(--text-muted);">AI modules</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROGRESS VIEW ──────────────────────────────────────── -->
+  <div id="progress-section">
+    <div class="glass" style="padding: 28px; margin-bottom: 20px;">
+      <div class="progress-header">
+        <div>
+          <div class="progress-story-name font-khmer" id="progress-story-name">Generating…</div>
+          <div class="progress-status-text" id="progress-status-text">Starting pipeline…</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:28px; font-weight:800; color:var(--gold); font-family:'Outfit',sans-serif;" id="progress-pct-display">0%</div>
+          <div style="font-size:11px; color:var(--text-muted);">complete</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="overall-progress" role="progressbar" aria-label="Pipeline progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="overall-progress-fill" id="progress-bar"></div>
+      </div>
+
+      <!-- Pipeline Steps -->
+      <div class="steps-grid" role="list" aria-label="Pipeline steps">
+        <div class="step-card" id="step-1" role="listitem" data-step="1">
+          <span class="step-icon" aria-hidden="true">✍️</span>
+          <div class="step-name">Script</div>
+          <div class="step-status" id="step-1-status">Waiting…</div>
+        </div>
+        <div class="step-card" id="step-2" role="listitem" data-step="2">
+          <span class="step-icon" aria-hidden="true">🎙️</span>
+          <div class="step-name">Audio</div>
+          <div class="step-status" id="step-2-status">Waiting…</div>
+        </div>
+        <div class="step-card" id="step-3" role="listitem" data-step="3">
+          <span class="step-icon" aria-hidden="true">🎨</span>
+          <div class="step-name">Images</div>
+          <div class="step-status" id="step-3-status">Waiting…</div>
+        </div>
+        <div class="step-card" id="step-4" role="listitem" data-step="4">
+          <span class="step-icon" aria-hidden="true">🎬</span>
+          <div class="step-name">Video</div>
+          <div class="step-status" id="step-4-status">Waiting…</div>
+        </div>
+        <div class="step-card" id="step-5" role="listitem" data-step="5">
+          <span class="step-icon" aria-hidden="true">📢</span>
+          <div class="step-name">Publish</div>
+          <div class="step-status" id="step-5-status">Waiting…</div>
+        </div>
+      </div>
+
+      <!-- Live message -->
+      <div id="live-message" aria-live="polite" aria-label="Live status update">
+        <div class="pulse-dot" aria-hidden="true"></div>
+        <span id="live-message-text">Initializing pipeline…</span>
+      </div>
+    </div>
+
+    <!-- Scene Gallery (live thumbnails) -->
+    <div class="glass" style="padding: 24px;" id="scene-gallery-card">
+      <p class="panel-title">Generated Scenes</p>
+      <div id="scene-gallery" aria-label="Scene thumbnails"></div>
+    </div>
+  </div>
+
+  <!-- ── OUTPUT VIEW ────────────────────────────────────────── -->
+  <div id="output-section">
+    <!-- Header -->
+    <div class="output-header">
+      <div>
+        <div class="output-story-name font-khmer" id="output-story-name">—</div>
+        <h2 class="output-title">Your Videos Are Ready! 🎉</h2>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div class="success-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          Complete
+        </div>
+        <button id="btn-new-run" aria-label="Start a new story">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          New Story
+        </button>
+      </div>
+    </div>
+
+    <!-- VIDEO PLAYERS -->
+    <div class="video-grid">
+
+      <!-- 📱 Mobile 9:16 -->
+      <div class="phone-frame-wrapper">
+        <div style="display:flex; align-items:center; gap:10px; width:100%; justify-content:center;">
+          <span class="video-label">
+            📱 Mobile
+            <span class="video-label-badge badge-tiktok">TikTok</span>
+            <span class="video-label-badge badge-tiktok" style="background:rgba(24,119,242,0.15); color:#4299E1; border-color:rgba(66,153,225,0.3);">Reels</span>
+          </span>
+        </div>
+        <div class="phone-frame">
+          <div class="phone-notch" aria-hidden="true">
+            <div class="phone-notch-cam"></div>
+          </div>
+          <div class="phone-screen">
+            <video id="video-mobile" controls playsinline preload="metadata" aria-label="Mobile format video (9:16)">
+              <source src="" type="video/mp4" id="video-mobile-src" />
+            </video>
+            <div class="video-placeholder" id="placeholder-mobile" aria-hidden="true">
+              <div class="video-placeholder-icon">📱</div>
+              <div>9:16 Video</div>
+            </div>
+          </div>
+          <div class="phone-home-bar" aria-hidden="true"></div>
+        </div>
+        <div class="download-btns">
+          <a id="dl-mobile" href="#" download class="btn-download" aria-label="Download mobile video">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download MP4
+          </a>
+        </div>
+      </div>
+
+      <!-- 💻 Laptop 16:9 -->
+      <div class="browser-frame-wrapper">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="video-label">
+            💻 Laptop / Desktop
+            <span class="video-label-badge badge-youtube">YouTube</span>
+            <span class="video-label-badge badge-tiktok" style="background:rgba(24,119,242,0.15); color:#4299E1; border-color:rgba(66,153,225,0.3);">Facebook</span>
+          </span>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-chrome" aria-hidden="true">
+            <div class="browser-dots">
+              <div class="browser-dot browser-dot-r"></div>
+              <div class="browser-dot browser-dot-y"></div>
+              <div class="browser-dot browser-dot-g"></div>
+            </div>
+            <div class="browser-url-bar">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              khmer-story-pipeline.vercel.app
+            </div>
+          </div>
+          <div class="browser-screen">
+            <video id="video-laptop" controls preload="metadata" aria-label="Laptop format video (16:9)">
+              <source src="" type="video/mp4" id="video-laptop-src" />
+            </video>
+            <div class="video-placeholder" id="placeholder-laptop" aria-hidden="true">
+              <div class="video-placeholder-icon">💻</div>
+              <div>16:9 Video</div>
+            </div>
+          </div>
+        </div>
+        <div class="download-btns">
+          <a id="dl-laptop" href="#" download class="btn-download" aria-label="Download laptop video">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download MP4
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- METADATA CARD -->
+    <div id="metadata-card" class="glass glass-gold">
+
+      <!-- Title Variants -->
+      <div class="meta-section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Title Options <span style="color:var(--text-muted); font-weight:400;">(click to copy)</span>
+      </div>
+      <div class="title-variants" id="title-variants" role="list"></div>
+
+      <!-- Descriptions -->
+      <div class="meta-section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Descriptions
+      </div>
+      <div class="description-cols">
+        <div class="desc-block">
+          <div class="desc-lang-tag">🇰🇭 Khmer</div>
+          <div class="desc-text khmer-text" id="desc-khmer" lang="km">—</div>
+        </div>
+        <div class="desc-block">
+          <div class="desc-lang-tag">🇬🇧 English</div>
+          <div class="desc-text" id="desc-english">—</div>
+        </div>
+      </div>
+
+      <!-- Hashtags -->
+      <div class="meta-section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+        Hashtags <span style="color:var(--text-muted); font-weight:400;" id="hashtag-count"></span>
+      </div>
+      <div class="hashtags-cloud" id="hashtags-cloud" role="list" aria-label="Hashtags"></div>
+
+      <!-- Best Post Time -->
+      <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--r-sm); margin-bottom:20px;">
+        <span style="font-size:20px;" aria-hidden="true">⏰</span>
+        <div>
+          <div style="font-size:11px; color:var(--text-muted); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;">Best Posting Time</div>
+          <div style="font-size:14px; color:var(--text-primary);" id="best-post-time">—</div>
+        </div>
+      </div>
+
+      <!-- Copy Caption Button -->
+      <button id="btn-copy-caption" aria-label="Copy full caption to clipboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        📋 Copy Full Caption to Clipboard
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── STORY PREVIEW MODAL ──────────────────────────────────── -->
+<div id="story-preview-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-title">Story Preview</h3>
+      <button class="modal-close" id="btn-modal-close" aria-label="Close preview">✕</button>
+    </div>
+    <div id="modal-story-title" style="font-family:'Noto Sans Khmer',sans-serif; color:var(--gold); font-size:18px; margin-bottom:16px;" lang="km"></div>
+    <div class="preview-scene-list" id="preview-scene-list" role="list"></div>
+    <div style="margin-top:24px; display:flex; gap:10px;">
+      <button id="btn-modal-run" style="flex:1; padding:12px; background:linear-gradient(135deg,var(--gold),var(--purple)); border:none; border-radius:var(--r-sm); color:var(--bg-deep); font-weight:700; font-size:14px; cursor:pointer; font-family:'Outfit',sans-serif;">
+        🎬 Run Pipeline with This Story
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ──────────────────────────────────────── -->
+<div id="toast-container" aria-live="assertive" aria-label="Notifications"></div>
+
+<!-- ── FOOTER ───────────────────────────────────────────────── -->
+<footer id="footer">
+  <p>
+    Built with ❤️ for Khmer storytelling ·
+    <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline" target="_blank" rel="noopener">
+      View on GitHub
+    </a>
+    · Powered by <a href="https://ai.google.dev" target="_blank" rel="noopener">Google Gemini</a>
+  </p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

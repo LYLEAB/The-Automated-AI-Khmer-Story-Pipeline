@@ -1,0 +1,48 @@
+# ============================================================
+# .gitignore — Automated AI Khmer Story Pipeline
+# ============================================================
+
+# Secrets — NEVER commit these
+.env
+*.json.key
+service_account*.json
+
+# Python virtual environments
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Generated output artifacts (large binary files)
+output/audio/
+output/images/
+output/video/
+output/metadata/
+output/state.json
+output/run_log.json
+
+# Assets that may contain copyrighted content
+assets/background_music.mp3
+
+# IDE & OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Test & coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MoviePy / FFmpeg temp files
+*.tmp
+*.temp
+TEMP_MPY_wvf_snd.mp3

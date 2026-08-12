@@ -1,0 +1,25 @@
+# ============================================================
+# railway.toml — Alternative: Deploy api.py to Railway.app
+# ============================================================
+# Railway is a great alternative to Render with:
+#   - Always-on servers (no cold start)
+#   - $5 free credit per month
+#   - Singapore servers available
+# ============================================================
+
+[build]
+builder = "nixpacks"
+buildCommand = "pip install -r requirements.txt"
+
+[deploy]
+startCommand = "uvicorn api:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/api/status"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[environments.production.variables]
+TTS_PROVIDER = "gtts"
+IMAGE_PROVIDER = "gemini_imagen"
+RESUME_ON_RESTART = "true"
+# Set GEMINI_API_KEY in the Railway dashboard (Variables tab)

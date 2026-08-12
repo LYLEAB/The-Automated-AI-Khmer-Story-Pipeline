@@ -1,0 +1,47 @@
+# ============================================================
+# render.yaml — Deploy api.py backend to Render.com (free tier)
+# ============================================================
+# 1. Push this repo to GitHub
+# 2. Create a new "Web Service" on render.com
+# 3. Connect your GitHub repo
+# 4. Render auto-detects this file and configures everything
+# ============================================================
+
+services:
+  - type: web
+    name: khmer-story-pipeline-api
+    runtime: python
+    region: singapore           # Closest to Cambodia for low latency
+    plan: free                  # Free tier (spins down after 15 min inactivity)
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/status
+
+    # Environment variables — set these in the Render dashboard
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false             # Enter manually in Render dashboard
+
+      - key: TTS_PROVIDER
+        value: gtts             # Free default; change to google_tts or elevenlabs
+
+      - key: IMAGE_PROVIDER
+        value: gemini_imagen    # Change to stability_ai if preferred
+
+      - key: RESUME_ON_RESTART
+        value: "true"
+
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        sync: false             # Optional: path to GCP service account JSON
+
+      - key: ELEVENLABS_API_KEY
+        sync: false             # Optional: ElevenLabs TTS
+
+      - key: STABILITY_API_KEY
+        sync: false             # Optional: Stability AI images
+
+    # Persistent disk for output files (free tier: 1 GB)
+    disk:
+      name: pipeline-output
+      mountPath: /app/output
+      sizeGB: 1
