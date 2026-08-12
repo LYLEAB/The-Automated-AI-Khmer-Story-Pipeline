@@ -18,9 +18,7 @@
 <!-- ── NAVBAR ─────────────────────────────────────────────── -->
 <nav id="navbar" role="navigation" aria-label="Main navigation">
   <div class="nav-logo">
-    <div class="logo-icon" aria-hidden="true">🎬</div>
     <h1>Khmer Story Pipeline</h1>
-    <span class="nav-badge">AI POWERED</span>
   </div>
   <div class="nav-links">
     <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline"
@@ -41,9 +39,6 @@
 
 <!-- ── HERO ──────────────────────────────────────────────────── -->
 <section id="hero" aria-label="Hero section">
-  <div class="hero-eyebrow" aria-hidden="true">
-    <span>✨</span> Automated AI Content Creation
-  </div>
   <h2 class="hero-title">Turn Stories Into Viral Videos</h2>
   <p class="hero-subtitle">
     Paste a Khmer story or let AI generate one — then watch the pipeline
@@ -67,11 +62,11 @@
         <div class="mode-tabs" role="tablist" aria-label="Story input mode">
           <button class="mode-tab active" id="tab-paste" role="tab" aria-selected="true" aria-controls="pane-paste">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            ✍️ Paste Story
+            Paste Story
           </button>
           <button class="mode-tab" id="tab-ai" role="tab" aria-selected="false" aria-controls="pane-ai">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            🤖 AI Generate
+            AI Generate
           </button>
         </div>
 
@@ -109,12 +104,12 @@
           <div style="margin-top: 16px;">
             <label class="field-label">Story Style & Mood</label>
             <div class="style-chips" role="group" aria-label="Story mood">
-              <button class="style-chip active" data-style="dramatic">🎭 Dramatic</button>
-              <button class="style-chip" data-style="mysterious">🌙 Mysterious</button>
-              <button class="style-chip" data-style="romantic">💕 Romantic</button>
-              <button class="style-chip" data-style="triumphant">⚔️ Heroic</button>
-              <button class="style-chip" data-style="peaceful">🌸 Peaceful</button>
-              <button class="style-chip" data-style="melancholic">🌧 Melancholic</button>
+              <button class="style-chip active" data-style="dramatic">Dramatic</button>
+              <button class="style-chip" data-style="mysterious">Mysterious</button>
+              <button class="style-chip" data-style="romantic">Romantic</button>
+              <button class="style-chip" data-style="triumphant">Heroic</button>
+              <button class="style-chip" data-style="peaceful">Peaceful</button>
+              <button class="style-chip" data-style="melancholic">Melancholic</button>
             </div>
           </div>
 
@@ -154,55 +149,58 @@
         <div class="select-group">
           <label class="field-label" for="sel-profile">Video Export</label>
           <select id="sel-profile" aria-label="Export profile">
-            <option value="both">📱💻 Both (Mobile + Laptop)</option>
-            <option value="mobile">📱 Mobile Only (9:16 TikTok/Reels)</option>
-            <option value="laptop">💻 Laptop Only (16:9 YouTube)</option>
+            <option value="both">Both (Mobile + Laptop)</option>
+            <option value="mobile">Mobile Only (9:16 TikTok/Reels)</option>
+            <option value="laptop">Laptop Only (16:9 YouTube)</option>
           </select>
         </div>
 
         <!-- TTS Provider -->
         <div class="select-group">
-          <label class="field-label" for="sel-tts">🎙️ Voice (TTS Provider)</label>
+          <label class="field-label" for="sel-tts">Voice (TTS Provider)</label>
           <select id="sel-tts" aria-label="TTS provider">
             <option value="gtts">gTTS (Free — no key needed)</option>
-            <option value="google_tts">Google Cloud TTS ⭐ Best quality</option>
+            <option value="google_tts">Google Cloud TTS (Best quality)</option>
             <option value="elevenlabs">ElevenLabs Multilingual</option>
           </select>
         </div>
 
         <!-- Image Provider -->
         <div class="select-group">
-          <label class="field-label" for="sel-image">🎨 Image Generator</label>
+          <label class="field-label" for="sel-image">Image Generator</label>
           <select id="sel-image" aria-label="Image provider">
-            <option value="gemini_imagen">Gemini Imagen 3 ⭐ Best quality</option>
+            <option value="gemini_imagen">Gemini Imagen 3 (Best quality)</option>
             <option value="stability_ai">Stability AI / SDXL</option>
           </select>
         </div>
 
         <div class="panel-divider"></div>
 
-        <!-- API URL (for deployed backend) -->
-        <div class="select-group">
-          <label class="field-label" for="api-url-input">🌐 Backend API URL</label>
-          <input
-            type="text"
-            id="api-url-input"
-            placeholder="https://your-api.railway.app"
-            aria-label="Backend API URL"
-            style="min-height: unset; resize: none; padding: 10px 14px;"
-          />
-          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">
-            Deploy <code style="color:var(--gold)">api.py</code> to Railway or Render,
-            then paste its URL here.
+        <!-- Advanced Settings / API URL -->
+        <details style="margin-top: 10px; font-size: 13px; color: var(--text-muted); cursor: pointer;">
+          <summary style="outline: none; user-select: none;">Advanced Configuration</summary>
+          <div class="select-group" style="margin-top: 10px;">
+            <label class="field-label" for="api-url-input">Backend API URL</label>
+            <input
+              type="text"
+              id="api-url-input"
+              placeholder="https://your-api.railway.app"
+              aria-label="Backend API URL"
+              style="min-height: unset; resize: none; padding: 10px 14px;"
+            />
+            <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">
+              Deploy <code style="color:var(--gold)">api.py</code> to Railway or Render,
+              then paste its URL here.
+            </div>
           </div>
-        </div>
+        </details>
 
         <div class="panel-divider"></div>
 
         <!-- Generate Button -->
         <button id="btn-generate" aria-label="Generate video">
           <div class="btn-shine" aria-hidden="true"></div>
-          🎬 Generate Video
+          Generate Video
         </button>
 
         <!-- Stats row -->
@@ -246,27 +244,22 @@
       <!-- Pipeline Steps -->
       <div class="steps-grid" role="list" aria-label="Pipeline steps">
         <div class="step-card" id="step-1" role="listitem" data-step="1">
-          <span class="step-icon" aria-hidden="true">✍️</span>
           <div class="step-name">Script</div>
           <div class="step-status" id="step-1-status">Waiting…</div>
         </div>
         <div class="step-card" id="step-2" role="listitem" data-step="2">
-          <span class="step-icon" aria-hidden="true">🎙️</span>
           <div class="step-name">Audio</div>
           <div class="step-status" id="step-2-status">Waiting…</div>
         </div>
         <div class="step-card" id="step-3" role="listitem" data-step="3">
-          <span class="step-icon" aria-hidden="true">🎨</span>
           <div class="step-name">Images</div>
           <div class="step-status" id="step-3-status">Waiting…</div>
         </div>
         <div class="step-card" id="step-4" role="listitem" data-step="4">
-          <span class="step-icon" aria-hidden="true">🎬</span>
           <div class="step-name">Video</div>
           <div class="step-status" id="step-4-status">Waiting…</div>
         </div>
         <div class="step-card" id="step-5" role="listitem" data-step="5">
-          <span class="step-icon" aria-hidden="true">📢</span>
           <div class="step-name">Publish</div>
           <div class="step-status" id="step-5-status">Waiting…</div>
         </div>

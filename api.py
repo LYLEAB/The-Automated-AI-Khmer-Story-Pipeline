@@ -227,7 +227,7 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         state = PipelineState(story_prompt=req.prompt)
 
         # ── STEP 1: Write scenes ─────────────────
-        emit(job_id, 1, "writer", "running", "✍️ Writing story with Gemini…", 5)
+        emit(job_id, 1, "writer", "running", "Writing story with Gemini…", 5)
         from writer import SceneWriter
         writer = SceneWriter()
 
@@ -244,10 +244,10 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         state.scenes_generated = True
         state.story_title = scene_list.story_title
         state.enriched_scenes = [EnrichedScene(**s.model_dump()) for s in scene_list.scenes]
-        emit(job_id, 1, "writer", "done", f"✅ Story written: '{scene_list.story_title}'", 18)
+        emit(job_id, 1, "writer", "done", f"Story written: '{scene_list.story_title}'", 18)
 
         # ── STEP 2: TTS Audio ────────────────────
-        emit(job_id, 2, "audio_engine", "running", "🎙️ Generating Khmer TTS audio…", 20)
+        emit(job_id, 2, "audio_engine", "running", "Generating Khmer TTS audio…", 20)
         from audio_engine import AudioEngine
         audio_engine = AudioEngine()
         enriched = audio_engine.process_all(scene_list)
@@ -255,10 +255,10 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         for e in enriched:
             state.mark_audio_done(e.scene_id)
         state.enriched_scenes = sorted(state_map.values(), key=lambda x: x.scene_id)
-        emit(job_id, 2, "audio_engine", "done", "✅ All audio generated", 36)
+        emit(job_id, 2, "audio_engine", "done", "All audio generated", 36)
 
         # ── STEP 3: Image Generation ─────────────
-        emit(job_id, 3, "visual_engine", "running", "🎨 Generating AI images…", 38)
+        emit(job_id, 3, "visual_engine", "running", "Generating AI images…", 38)
         from visual_engine import VisualEngine
         vis_engine = VisualEngine()
         updated = vis_engine.process_all(state.enriched_scenes)
@@ -266,7 +266,7 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         for e in updated:
             state.mark_image_done(e.scene_id)
         state.enriched_scenes = sorted(state_map2.values(), key=lambda x: x.scene_id)
-        emit(job_id, 3, "visual_engine", "done", "✅ All scene images generated", 60)
+        emit(job_id, 3, "visual_engine", "done", "All scene images generated", 60)
 
         # Collect image thumbnails for UI gallery
         scene_previews = []
@@ -283,7 +283,7 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         job["scene_previews"] = scene_previews
 
         # ── STEP 4: Video Rendering ───────────────
-        emit(job_id, 4, "renderer", "running", "🎬 Rendering video (this takes a minute)…", 62)
+        emit(job_id, 4, "renderer", "running", "Rendering video (this takes a minute)…", 62)
         from renderer import VideoRenderer
         from models import ExportProfile as EP
         renderer = VideoRenderer()
@@ -295,10 +295,10 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         )
         state.video_mobile_path = results.get("mobile")
         state.video_laptop_path = results.get("laptop")
-        emit(job_id, 4, "renderer", "done", "✅ Videos rendered", 84)
+        emit(job_id, 4, "renderer", "done", "Videos rendered", 84)
 
         # ── STEP 5: Metadata ─────────────────────
-        emit(job_id, 5, "publisher", "running", "📢 Generating social media metadata…", 86)
+        emit(job_id, 5, "publisher", "running", "Generating social media metadata…", 86)
         total_dur = sum(e.audio_duration_s for e in state.enriched_scenes)
         from publisher import MetadataPublisher
         publisher = MetadataPublisher()
@@ -309,12 +309,12 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         )
         publisher.save(metadata, state.story_title, video_paths=results)
         state.metadata_done = True
-        emit(job_id, 5, "publisher", "done", "✅ Metadata generated", 100)
+        emit(job_id, 5, "publisher", "done", "Metadata generated", 100)
 
         # ── Upload videos to Supabase Storage ────
         if SUPABASE_ENABLED:
             try:
-                emit(job_id, 5, "storage", "running", "☁️ Uploading videos to cloud storage…", 90)
+                emit(job_id, 5, "storage", "running", "Uploading videos to cloud storage…", 90)
                 if results.get("mobile") and Path(results["mobile"]).exists():
                     mobile_url = sb.upload_video(job_id, "mobile", Path(results["mobile"]))
                     outputs["video_mobile"] = mobile_url   # override with CDN URL
@@ -342,7 +342,7 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
                 print(f"[Supabase] update_job(done) failed: {exc}")
 
         # Send final DONE event
-        emit(job_id, 5, "done", "done", "🎉 Pipeline complete!", 100)
+        emit(job_id, 5, "done", "done", "Pipeline complete!", 100)
 
     except Exception as exc:
         tb = traceback.format_exc()
