@@ -34,7 +34,7 @@ STABILITY_API_KEY: str = os.getenv("STABILITY_API_KEY", "")
 # ─────────────────────────────────────────────
 # AI MODEL IDENTIFIERS
 # ─────────────────────────────────────────────
-GEMINI_WRITER_MODEL = "gemini-2.5-pro"
+GEMINI_WRITER_MODEL = "gemini-1.5-pro"
 GEMINI_PUBLISHER_MODEL = "gemini-2.5-flash"
 GEMINI_IMAGEN_MODEL = "imagen-3.0-generate-002"
 
