@@ -41,6 +41,17 @@ let currentMode = 'paste_story';    // 'paste_story' | 'ai_generate'
 let selectedStyle = 'dramatic';
 let previewedScenes = null;         // scenes from "Preview Story" modal
 
+const PROMPT_IDEAS = [
+  "រឿងព្រេងខ្មែរបុរាណនិយាយពីអ្នកក្លាហានដែលការពារនគរពីបិសាច",
+  "A cyberpunk version of Phnom Penh in the year 2150",
+  "រឿងកំប្លែងនិយាយពីសត្វឆ្កែមួយក្បាលដែលចេះនិយាយភាសាខ្មែរ",
+  "A dramatic story about a young apsara dancer finding her inner strength",
+  "រឿងស្នេហាកំសត់នៅសម័យលង្វែក",
+  "A mysterious thriller set in the ruins of Angkor Wat at midnight",
+  "រឿងនិទានអប់រំកុមារអំពីសត្វទន្សាយមានប្រាជ្ញា",
+  "An action-packed heroic tale of a Bokator master"
+];
+
 // ─────────────────────────────────────────────
 // DOM REFERENCES
 // ─────────────────────────────────────────────
@@ -155,6 +166,7 @@ function initButtons() {
   $('btn-new-run')?.addEventListener('click', handleNewRun);
   $('btn-modal-close')?.addEventListener('click', closeModal);
   $('btn-modal-run')?.addEventListener('click', handleRunFromModal);
+  $('btn-surprise-me')?.addEventListener('click', handleSurpriseMe);
 
   // Close modal on backdrop click
   $('story-preview-modal')?.addEventListener('click', (e) => {
@@ -188,6 +200,28 @@ function validate() {
     showToast('⚠️ Using local backend. Deploy api.py to Railway/Render and set the Backend API URL.', 'info');
   }
   return true;
+}
+
+// ─────────────────────────────────────────────
+// SURPRISE ME (RANDOM PROMPT)
+// ─────────────────────────────────────────────
+function handleSurpriseMe() {
+  const promptInput = $('story-prompt');
+  if (!promptInput) return;
+  
+  const randomPrompt = PROMPT_IDEAS[Math.floor(Math.random() * PROMPT_IDEAS.length)];
+  
+  // Quick typing effect
+  promptInput.value = '';
+  let i = 0;
+  function typeWriter() {
+    if (i < randomPrompt.length) {
+      promptInput.value += randomPrompt.charAt(i);
+      i++;
+      setTimeout(typeWriter, 15);
+    }
+  }
+  typeWriter();
 }
 
 // ─────────────────────────────────────────────

@@ -210,6 +210,12 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; line-height: 1.2; }
   background-clip: text;
   margin-bottom: 16px;
   line-height: 1.1;
+  animation: floatTitle 6s ease-in-out infinite;
+}
+
+@keyframes floatTitle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 .hero-subtitle {
   font-size: 17px;
@@ -319,11 +325,33 @@ textarea, input[type="text"] {
 textarea:focus, input[type="text"]:focus {
   border-color: var(--gold);
   background: rgba(255,255,255,0.07);
-  box-shadow: 0 0 0 3px var(--gold-dim), 0 0 20px var(--gold-glow);
+  box-shadow: 0 0 0 3px var(--gold-dim), 0 0 30px var(--gold-glow);
 }
 textarea::placeholder, input::placeholder { color: var(--text-muted); font-family: 'Inter', sans-serif; }
 #story-text { min-height: 240px; }
 #story-prompt { min-height: 80px; }
+
+/* Surprise Me Button */
+.btn-surprise {
+  background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(139,92,246,0.1));
+  border: 1px solid var(--border-gold);
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-surprise:hover {
+  background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(139,92,246,0.25));
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--gold-glow);
+}
 
 /* Style selector chips */
 .style-chips {

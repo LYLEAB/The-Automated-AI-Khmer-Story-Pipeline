@@ -91,9 +91,14 @@
 
         <!-- Tab: AI Generate -->
         <div class="tab-pane" id="pane-ai" role="tabpanel" aria-labelledby="tab-ai">
-          <label class="field-label" for="story-prompt">
-            Describe the story you want AI to write
-          </label>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <label class="field-label" for="story-prompt" style="margin-bottom:0;">
+              Describe the story you want AI to write
+            </label>
+            <button id="btn-surprise-me" class="btn-surprise" aria-label="Generate random prompt idea">
+              ✨ Surprise Me
+            </button>
+          </div>
           <textarea
             id="story-prompt"
             placeholder="e.g. រឿងកុលាបប៉ៃលិន — a Khmer princess who discovers a magical rose garden&#10;&#10;Or in English: A brave Khmer warrior who protects his village from a demon king"
