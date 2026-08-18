@@ -322,9 +322,11 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
             num_scenes=len(state.enriched_scenes),
             duration_seconds=total_dur,
         )
-        publisher.save(metadata, state.story_title, video_paths=results)
+        publisher.save(metadata, state.story_title)
         state.metadata_done = True
         emit(job_id, 5, "publisher", "done", "Metadata generated", 100)
+
+        outputs = {}
 
         # ── Upload videos to Supabase Storage ────
         if SUPABASE_ENABLED:
@@ -481,11 +483,16 @@ async def progress_stream(job_id: str):
         while True:
             try:
                 event = await asyncio.wait_for(q.get(), timeout=30.0)
-                if event is None:   # Pipeline finished
-                    yield f"data: {json.dumps({'done': True})}\n\n"
+                if event is None:   # Pipeline finished or crashed
+                    if jobs[job_id].get("status") == JobStatus.FAILED:
+                        # Frontend will handle the 'failed' event that was sent right before None
+                        break
+                    yield f"data: {json.dumps({'done': True, 'outputs': jobs[job_id].get('outputs', {})})}\n\n"
                     break
                 yield f"data: {json.dumps(event)}\n\n"
                 if event.get("status") in ("done", "failed") and event.get("step") == 5:
+                    if event.get("status") == "failed":
+                        break
                     yield f"data: {json.dumps({'done': True, 'outputs': jobs[job_id].get('outputs', {})})}\n\n"
                     break
             except asyncio.TimeoutError:
