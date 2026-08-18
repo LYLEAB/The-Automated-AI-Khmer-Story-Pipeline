@@ -367,12 +367,26 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
 
 @app.get("/")
 async def root():
-    """Serve frontend index.html (local dev) or redirect to Vercel."""
     index = WEB_DIR / "index.html"
     if index.exists():
         return FileResponse(str(index))
     return JSONResponse({"status": "Khmer Story Pipeline API", "version": "1.0.0"})
 
+
+@app.get("/style.css")
+async def get_style():
+    style = WEB_DIR / "style.css"
+    if style.exists():
+        return FileResponse(str(style), media_type="text/css")
+    raise HTTPException(status_code=404, detail="style.css not found")
+
+
+@app.get("/app.js")
+async def get_app_js():
+    js = WEB_DIR / "app.js"
+    if js.exists():
+        return FileResponse(str(js), media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found")
 
 @app.get("/api/status")
 async def health():
