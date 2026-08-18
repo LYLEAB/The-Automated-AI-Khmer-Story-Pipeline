@@ -179,7 +179,7 @@ def emit(job_id: str, step: int, module: str, status: str, message: str, pct: in
         "timestamp": datetime.now().isoformat(),
     }
     if job_id in jobs:
-        jobs[job_id].update({"step": step, "progress_pct": pct, "message": message, "status": status})
+        jobs[job_id].update({"step": step, "progress_pct": pct, "message": message})
 
     if SUPABASE_ENABLED:
         try:

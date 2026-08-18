@@ -251,14 +251,18 @@ function handleProgressEvent(apiUrl, jobId, data) {
   const { step, progress_pct, message, status } = data;
   updateProgress(progress_pct, message, status, step);
 
-  if (progress_pct >= 100 || status === 'done') {
-    if (currentEventSource) currentEventSource.close();
+  if (progress_pct >= 100 || (status === 'done' && step === 5)) {
+    if (currentEventSource) {
+      try { currentEventSource.close(); } catch(e) {}
+    }
     stopPolling();
     stopTimer();
     showToast('Video ready!');
     fetchCompletedJob(apiUrl, jobId);
   } else if (status === 'failed') {
-    if (currentEventSource) currentEventSource.close();
+    if (currentEventSource) {
+      try { currentEventSource.close(); } catch(e) {}
+    }
     stopPolling();
     stopTimer();
     showToast(`Pipeline failed: ${message}`);
