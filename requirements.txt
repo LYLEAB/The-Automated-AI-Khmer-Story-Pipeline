@@ -2,40 +2,44 @@
 # Automated AI Khmer Story Pipeline — Python Dependencies
 # ============================================================
 
-# --- AI / LLM ---
-google-generativeai>=0.8.0          # Gemini API (writer + publisher + Imagen)
-google-cloud-texttospeech>=2.16.0   # Google Cloud TTS (km-KH WaveNet)
-google-auth>=2.28.0                 # GCP service account auth
+# --- AI / LLM (Google AI Studio) ---
+google-generativeai>=0.8.0
+google-cloud-texttospeech>=2.16.0
+google-auth>=2.28.0
 
-# --- TTS Fallbacks ---
-elevenlabs>=1.2.0                   # ElevenLabs multilingual TTS fallback
-gTTS>=2.5.0                         # gTTS free fallback (lang='km')
+# --- TTS Providers ---
+elevenlabs>=1.2.0
+gTTS>=2.5.0
 
-# --- Image Generation Fallback ---
-stability-sdk>=0.8.4                # Stability AI / SDXL image gen fallback
-requests>=2.31.0                    # HTTP client (REST API calls)
+# --- Image Generation ---
+stability-sdk>=0.8.4
+requests>=2.31.0
 
 # --- Video & Audio Processing ---
-moviepy>=1.0.3                      # Video assembly, Ken Burns, transitions
-ffmpeg-python>=0.2.0                # FFmpeg Python wrapper
-mutagen>=1.47.0                     # MP3/audio metadata & duration (ms accurate)
-pydub>=0.25.1                       # Audio mixing (background music overlay)
-Pillow>=10.3.0                      # Image resizing, cropping, subtitle rendering
+moviepy>=1.0.3
+ffmpeg-python>=0.2.0
+mutagen>=1.47.0
+pydub>=0.25.1
+Pillow>=10.3.0
+numpy>=1.24.0
+
+# --- Cloud Storage (Cloudflare R2 & Supabase) ---
+boto3>=1.34.0
+supabase>=2.4.0
 
 # --- Data Validation & Config ---
-pydantic>=2.5.0                     # V2 data models (Scene, SceneList, State)
-python-dotenv>=1.0.0                # Load .env API keys
+pydantic>=2.5.0
+python-dotenv>=1.0.0
 
 # --- Web API Backend ---
-fastapi>=0.111.0                    # FastAPI web framework (api.py backend)
-uvicorn[standard]>=0.29.0           # ASGI server for FastAPI (deploy to Render/Railway)
-python-multipart>=0.0.9             # File upload support for FastAPI
-supabase>=2.4.0                     # Supabase Python SDK (job store + storage)
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
 
 # --- CLI & Logging ---
-rich>=13.7.0                        # Beautiful terminal output & progress bars
-click>=8.1.7                        # CLI argument parsing
+rich>=13.7.0
+click>=8.1.7
 
 # --- Testing ---
-pytest>=7.4.0                       # Unit test framework
-pytest-mock>=3.12.0                 # Mocking for API calls in tests
+pytest>=7.4.0
+pytest-mock>=3.12.0
