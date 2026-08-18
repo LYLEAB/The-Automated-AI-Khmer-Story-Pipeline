@@ -497,27 +497,32 @@ async def get_job(job_id: str):
 @app.get("/api/video/{job_id}/{profile}")
 async def stream_video(job_id: str, profile: str):
     """Stream an MP4 video file for the given job and profile (mobile/laptop)."""
-    if job_id not in jobs:
-        raise HTTPException(status_code=404, detail="Job not found")
-
-    job = jobs[job_id]
-    outputs = job.get("outputs", {})
-    key = f"video_{profile}"
-
-    # Resolve actual file path from job output dir
-    import config as cfg
     job_video_dir = Path("output") / job_id / "video"
-    mp4_files = list(job_video_dir.glob(f"*_{profile}_*.mp4" if profile == "mobile" else f"*laptop*.mp4"))
+    if not job_video_dir.exists():
+        job_video_dir = Path("output") / "video"
+
+    suffix = "mobile" if profile == "mobile" else "laptop"
+    mp4_files = list(job_video_dir.glob(f"*{suffix}*.mp4"))
     if not mp4_files:
         mp4_files = list(job_video_dir.glob("*.mp4"))
 
     if not mp4_files:
-        raise HTTPException(status_code=404, detail=f"Video ({profile}) not ready yet")
+        raise HTTPException(status_code=404, detail=f"Video ({profile}) not found on server")
 
+    video_file = mp4_files[0]
+    from urllib.parse import quote
+    encoded_name = quote(video_file.name)
     return FileResponse(
-        str(mp4_files[0]),
+        path=str(video_file),
         media_type="video/mp4",
-        headers={"Accept-Ranges": "bytes"},
+        filename=f"video_{profile}.mp4",
+        headers={
+            "Accept-Ranges": "bytes",
+            "Content-Disposition": f"inline; filename=\"video_{profile}.mp4\"; filename*=UTF-8''{encoded_name}",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+            "Access-Control-Expose-Headers": "Content-Range, Accept-Ranges, Content-Length",
+        },
     )
 
 

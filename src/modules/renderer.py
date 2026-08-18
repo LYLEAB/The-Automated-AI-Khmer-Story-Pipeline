@@ -261,6 +261,7 @@ class VideoRenderer:
             audio_codec=config.AUDIO_CODEC,
             bitrate=config.VIDEO_BITRATE,
             fps=config.VIDEO_FPS,
+            ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
             logger=None,
         )
         return output_path

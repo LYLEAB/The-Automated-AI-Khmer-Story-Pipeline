@@ -372,7 +372,7 @@ async function fetchCompletedJob(apiUrl, jobId) {
     const res = await fetch(`${apiUrl}/api/jobs`);
     if (!res.ok) return;
     const jobs = await res.json();
-    const job = jobs.find(j => j.id === jobId);
+    const job = jobs.find(j => j.id === jobId) || jobs[0];
     if (!job) return;
 
     $('progress-view')?.classList.add('hidden');
@@ -390,15 +390,33 @@ async function fetchCompletedJob(apiUrl, jobId) {
 
     if (mobilePlayer) {
       mobilePlayer.src = mobileVideoUrl;
+      mobilePlayer.load();
       $('btn-dl-mobile').href = mobileVideoUrl;
     }
     if (laptopPlayer) {
       laptopPlayer.src = laptopVideoUrl;
+      laptopPlayer.load();
       $('btn-dl-laptop').href = laptopVideoUrl;
     }
 
-    // Populate metadata
-    $('out-caption-box').value = `${job.story_title || ''}\n\n#KhmerStory #រឿងខ្មែរ #KhmerAI #TikTokCambodia #CambodiaCinema`;
+    // Try fetching rich metadata
+    try {
+      const metaRes = await fetch(`${apiUrl}/api/metadata/${jobId}`);
+      if (metaRes.ok) {
+        const meta = await metaRes.json();
+        if (meta.title_variants) {
+          $('out-titles-box').innerHTML = meta.title_variants.map((t, idx) => `<p class="meta-line">${idx + 1}. ${t}</p>`).join('');
+        }
+        if (meta.hashtags) {
+          $('out-hashtags-box').textContent = meta.hashtags.join(' ');
+        }
+        if (meta.description_khmer) {
+          $('out-caption-box').value = `${meta.title_variants?.[0] || job.story_title}\n\n${meta.description_khmer}\n\n${(meta.hashtags || []).join(' ')}`;
+        }
+      }
+    } catch (e) {
+      $('out-caption-box').value = `${job.story_title || ''}\n\n#KhmerStory #រឿងខ្មែរ #KhmerAI #TikTokCambodia #CambodiaCinema`;
+    }
   } catch (e) {}
 }
 
