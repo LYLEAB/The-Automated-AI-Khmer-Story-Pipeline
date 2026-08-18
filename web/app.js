@@ -1,26 +1,45 @@
 /**
- * app.js — Khmer Story Pipeline Frontend Logic
- * ==============================================
- * Handles:
- *  - Tab switching (Paste / AI Generate)
- *  - API communication (REST + SSE real-time progress)
- *  - Pipeline progress UI updates
- *  - Video player population (mobile phone frame + laptop browser frame)
- *  - Metadata display (titles, descriptions, hashtags)
- *  - Clipboard copy for captions
- *  - Story preview modal
- *  - Toast notifications
+ * app.js — KhmerAI Studio SaaS Application Controller
+ * ====================================================
+ * Manages studio workflows, real-time SSE progress streaming,
+ * story templates, scene preview inspector, video players,
+ * social media publisher toolkit, and project history.
  */
 
 'use strict';
 
-// ─────────────────────────────────────────────
-// CONFIGURATION
-// ─────────────────────────────────────────────
+// ── CONFIGURATION & STATE ────────────────────────────────────
+let currentJobId = null;
+let currentEventSource = null;
+let currentMode = 'ai_generate'; // 'ai_generate' | 'paste_story'
+let selectedStyle = 'dramatic';
+let previewedScenes = null;
 
-/** Read API URL from the input field, localStorage, or environment (injected by Vercel). */
+const PROMPT_TEMPLATES = {
+  legend: "រឿងព្រេងខ្មែរបុរាណនិយាយពីអ្នកក្លាហានដែលការពារនគរពីបិសាច និងការស្វែងរកដាវទិព្វនៅប្រាសាទបុរាណ",
+  cyberpunk: "A futuristic cyberpunk version of Phnom Penh in the year 2150 with neon lights, flying tuk-tuks, and AI monks",
+  ghost: "A spine-chilling midnight mystery set inside the deep forgotten corridors of Angkor Wat ruins",
+  romance: "រឿងកុលាបប៉ៃលិន — a legendary tale of true love, perseverance, and jewel mines in the emerald mountains of Pailin",
+  bokator: "An epic martial arts story of an ancient Khmer Bokator master fighting to protect his village",
+  fable: "រឿងនិទានអប់រំកុមារបែបកំប្លែងអំពីសត្វទន្សាយមានប្រាជ្ញាឈ្លាសវៃ និងសត្វក្រពើ"
+};
+
+const PROMPT_IDEAS = [
+  "រឿងព្រេងខ្មែរបុរាណនិយាយពីអ្នកក្លាហានដែលការពារនគរពីបិសាច",
+  "A cyberpunk version of Phnom Penh in the year 2150 with flying vehicles",
+  "រឿងកំប្លែងនិយាយពីសត្វឆ្កែមួយក្បាលដែលចេះនិយាយភាសាខ្មែរ",
+  "A dramatic story about a young apsara dancer finding her inner strength",
+  "រឿងស្នេហាកំសត់នៅសម័យលង្វែក",
+  "A mysterious thriller set in the ruins of Angkor Wat at midnight",
+  "រឿងនិទានអប់រំកុមារអំពីសត្វទន្សាយមានប្រាជ្ញា",
+  "An action-packed heroic tale of an ancient Bokator master"
+];
+
+// Helper Selectors
+const $ = (id) => document.getElementById(id);
+
 function getApiUrl() {
-  const inputVal = document.getElementById('api-url-input')?.value?.trim();
+  const inputVal = $('api-url-input')?.value?.trim();
   if (inputVal) {
     localStorage.setItem('khmer_api_url', inputVal);
     return inputVal.replace(/\/$/, '');
@@ -36,687 +55,419 @@ function getApiUrl() {
   return '';
 }
 
-// ─────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────
-
-let currentJobId = null;
-let currentEventSource = null;
-let currentMode = 'paste_story';    // 'paste_story' | 'ai_generate'
-let selectedStyle = 'dramatic';
-let previewedScenes = null;         // scenes from "Preview Story" modal
-
-const PROMPT_IDEAS = [
-  "រឿងព្រេងខ្មែរបុរាណនិយាយពីអ្នកក្លាហានដែលការពារនគរពីបិសាច",
-  "A cyberpunk version of Phnom Penh in the year 2150",
-  "រឿងកំប្លែងនិយាយពីសត្វឆ្កែមួយក្បាលដែលចេះនិយាយភាសាខ្មែរ",
-  "A dramatic story about a young apsara dancer finding her inner strength",
-  "រឿងស្នេហាកំសត់នៅសម័យលង្វែក",
-  "A mysterious thriller set in the ruins of Angkor Wat at midnight",
-  "រឿងនិទានអប់រំកុមារអំពីសត្វទន្សាយមានប្រាជ្ញា",
-  "An action-packed heroic tale of a Bokator master"
-];
-
-// ─────────────────────────────────────────────
-// DOM REFERENCES
-// ─────────────────────────────────────────────
-
-const $ = (id) => document.getElementById(id);
-const $el = (sel) => document.querySelector(sel);
-
-// ─────────────────────────────────────────────
-// INITIALIZATION
-// ─────────────────────────────────────────────
-
+// ── INITIALIZATION ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initSlider();
-  initStyleChips();
-  initButtons();
-  initCharCounter();
-  restoreApiUrl();
+  // Load saved backend URL
+  const savedUrl = localStorage.getItem('khmer_api_url');
+  if (savedUrl && $('api-url-input')) {
+    $('api-url-input').value = savedUrl;
+  }
+
+  // Character counter listeners
+  $('story-prompt')?.addEventListener('input', (e) => {
+    $('prompt-char-count').textContent = `${e.target.value.length} chars`;
+  });
+  $('story-text')?.addEventListener('input', (e) => {
+    $('text-char-count').textContent = `${e.target.value.length} chars`;
+  });
 });
 
-// ─────────────────────────────────────────────
-// TAB SWITCHING
-// ─────────────────────────────────────────────
+// ── VIEW SWITCHING ───────────────────────────────────────────
+function switchMainView(view) {
+  $('nav-btn-studio')?.classList.toggle('active', view === 'studio');
+  $('nav-btn-gallery')?.classList.toggle('active', view === 'gallery');
 
-function initTabs() {
-  const tabs = document.querySelectorAll('.mode-tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        t.classList.remove('active');
-        t.setAttribute('aria-selected', 'false');
-      });
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  if (view === 'studio') {
+    $('studio-view-container')?.classList.remove('hidden');
+    $('gallery-view')?.classList.add('hidden');
+  } else if (view === 'gallery') {
+    $('studio-view-container')?.classList.add('hidden');
+    $('gallery-view')?.classList.remove('hidden');
+    fetchRecentJobs();
+  }
+}
 
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      const targetId = tab.getAttribute('aria-controls');
-      document.getElementById(targetId)?.classList.add('active');
-      currentMode = tab.id === 'tab-paste' ? 'paste_story' : 'ai_generate';
-    });
+// ── SCRIPT ENGINE MODE SWITCHER ──────────────────────────────
+function switchMode(mode) {
+  currentMode = mode;
+  $('tab-ai')?.classList.toggle('active', mode === 'ai_generate');
+  $('tab-paste')?.classList.toggle('active', mode === 'paste_story');
+
+  $('pane-ai')?.classList.toggle('active', mode === 'ai_generate');
+  $('pane-ai')?.classList.toggle('hidden', mode !== 'ai_generate');
+  $('pane-paste')?.classList.toggle('active', mode === 'paste_story');
+  $('pane-paste')?.classList.toggle('hidden', mode !== 'paste_story');
+}
+
+function toggleTemplateDrawer() {
+  $('template-drawer')?.classList.toggle('hidden');
+}
+
+function applyTemplate(key) {
+  const text = PROMPT_TEMPLATES[key];
+  if (!text) return;
+
+  switchMode('ai_generate');
+  $('story-prompt').value = text;
+  $('prompt-char-count').textContent = `${text.length} chars`;
+  $('template-drawer')?.classList.add('hidden');
+  showToast('Template applied to prompt field', 'info');
+}
+
+function selectStyle(style) {
+  selectedStyle = style;
+  document.querySelectorAll('.mood-tag').forEach(tag => {
+    tag.classList.toggle('active', tag.dataset.style === style);
   });
 }
 
-// ─────────────────────────────────────────────
-// RANGE SLIDER
-// ─────────────────────────────────────────────
-
-function initSlider() {
-  const slider = $('range-scenes');
-  const label  = $('scenes-val');
-  if (!slider) return;
-
-  function updateSlider() {
-    const pct = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
-    slider.style.setProperty('--pct', `${pct}%`);
-    label.textContent = slider.value;
-    slider.setAttribute('aria-valuenow', slider.value);
-  }
-
-  slider.addEventListener('input', updateSlider);
-  updateSlider();
-}
-
-// ─────────────────────────────────────────────
-// STYLE CHIPS
-// ─────────────────────────────────────────────
-
-function initStyleChips() {
-  document.querySelectorAll('.style-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      selectedStyle = chip.dataset.style;
-    });
-  });
-}
-
-// ─────────────────────────────────────────────
-// CHARACTER COUNTER
-// ─────────────────────────────────────────────
-
-function initCharCounter() {
-  const ta = $('story-text');
-  const counter = $('char-count');
-  if (!ta || !counter) return;
-  ta.addEventListener('input', () => {
-    counter.textContent = `${ta.value.length} chars`;
-    counter.style.color = ta.value.length > 5000 ? 'var(--red)' : 'var(--text-muted)';
-  });
-}
-
-// ─────────────────────────────────────────────
-// RESTORE API URL FROM LOCALSTORAGE
-// ─────────────────────────────────────────────
-
-function restoreApiUrl() {
-  const saved = localStorage.getItem('khmer_api_url');
-  if (saved) {
-    const input = $('api-url-input');
-    if (input) input.value = saved;
-  }
-}
-
-// ─────────────────────────────────────────────
-// BUTTON WIRING
-// ─────────────────────────────────────────────
-
-function initButtons() {
-  $('btn-generate')?.addEventListener('click', handleGenerate);
-  $('btn-preview-story')?.addEventListener('click', handlePreviewStory);
-  $('btn-copy-caption')?.addEventListener('click', handleCopyCaption);
-  $('btn-new-run')?.addEventListener('click', handleNewRun);
-  $('btn-modal-close')?.addEventListener('click', closeModal);
-  $('btn-modal-run')?.addEventListener('click', handleRunFromModal);
-  $('btn-surprise-me')?.addEventListener('click', handleSurpriseMe);
-
-  // Close modal on backdrop click
-  $('story-preview-modal')?.addEventListener('click', (e) => {
-    if (e.target === $('story-preview-modal')) closeModal();
-  });
-}
-
-// ─────────────────────────────────────────────
-// VALIDATION
-// ─────────────────────────────────────────────
-
-function getStoryInput() {
-  if (currentMode === 'paste_story') {
-    return $('story-text')?.value?.trim() || '';
-  }
-  return $('story-prompt')?.value?.trim() || '';
-}
-
-function validate() {
-  const input = getStoryInput();
-  if (!input) {
-    showToast('Please enter a story or prompt first.', 'error');
-    return false;
-  }
-  if (input.length < 20) {
-    showToast('Your input is too short. Please add more detail.', 'error');
-    return false;
-  }
-  const apiUrl = getApiUrl();
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  if (!apiUrl && !isLocal) {
-    showToast('Please enter your Render Backend API URL in Advanced Settings.', 'error');
-    $('adv-details')?.setAttribute('open', '');
-    $('api-url-input')?.focus();
-    return false;
-  }
-  return true;
-}
-
-// ─────────────────────────────────────────────
-// SURPRISE ME (RANDOM PROMPT)
-// ─────────────────────────────────────────────
 function handleSurpriseMe() {
   const promptInput = $('story-prompt');
   if (!promptInput) return;
-  
+
+  switchMode('ai_generate');
   const randomPrompt = PROMPT_IDEAS[Math.floor(Math.random() * PROMPT_IDEAS.length)];
-  
-  // Quick typing effect
-  promptInput.value = '';
-  let i = 0;
-  function typeWriter() {
-    if (i < randomPrompt.length) {
-      promptInput.value += randomPrompt.charAt(i);
-      i++;
-      setTimeout(typeWriter, 15);
-    }
-  }
-  typeWriter();
+  promptInput.value = randomPrompt;
+  $('prompt-char-count').textContent = `${randomPrompt.length} chars`;
+  showToast('Viral concept generated', 'info');
 }
 
-// ─────────────────────────────────────────────
-// MAIN GENERATE HANDLER
-// ─────────────────────────────────────────────
-
-async function handleGenerate() {
-  if (!validate()) return;
-
-  const payload = {
-    prompt:          getStoryInput(),
-    mode:            currentMode,
-    num_scenes:      parseInt($('range-scenes')?.value || '6'),
-    export_profile:  $('sel-profile')?.value || 'both',
-    tts_provider:    $('sel-tts')?.value || 'gtts',
-    image_provider:  $('sel-image')?.value || 'gemini_imagen',
-    story_style:     selectedStyle,
-  };
-
-  setGenerateButtonState('loading');
-  showProgressView();
-
-  try {
-    const apiUrl = getApiUrl();
-    const res = await fetch(`${apiUrl}/api/run`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
-      throw new Error(err.detail || `HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-    currentJobId = data.job_id;
-    connectSSE(currentJobId);
-    showToast(`Job started: ${currentJobId}`, 'info');
-
-  } catch (err) {
-    setGenerateButtonState('idle');
-    showToast(`Failed to start pipeline: ${err.message}`, 'error');
-    hideProgressView();
-  }
+function handleSceneSliderChange(val) {
+  $('num-scenes-val').textContent = val;
 }
 
-// ─────────────────────────────────────────────
-// SERVER-SENT EVENTS (SSE) — REAL-TIME PROGRESS
-// ─────────────────────────────────────────────
-
-function connectSSE(jobId) {
-  if (currentEventSource) currentEventSource.close();
-
-  const apiUrl = getApiUrl();
-  const url = `${apiUrl}/api/progress/${jobId}`;
-  currentEventSource = new EventSource(url);
-
-  currentEventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    // Update progress bar
-    if (typeof data.progress_pct === 'number') {
-      updateProgressBar(data.progress_pct);
-    }
-
-    // Update step cards
-    if (data.step) {
-      updateStepCard(data.step, data.status, data.message);
-    }
-
-    // Update live message
-    if (data.message) {
-      $('live-message-text').textContent = data.message;
-      $('progress-status-text').textContent = data.message;
-    }
-
-    // Pipeline done
-    if (data.done) {
-      currentEventSource.close();
-
-      if (data.outputs) {
-        // Fetch full job state for scene previews and metadata
-        fetchJobAndShowOutputs(currentJobId);
-      } else if (data.status === 'failed') {
-        setGenerateButtonState('idle');
-        showToast('Pipeline failed. Check the console.', 'error');
-        updateProgressBar(0);
-      }
-    }
-  };
-
-  currentEventSource.onerror = () => {
-    // Reconnect automatically — SSE will handle keepalive
-    // Don't show error on routine keepalive interruptions
-  };
-}
-
-// ─────────────────────────────────────────────
-// PROGRESS UI
-// ─────────────────────────────────────────────
-
-const STEP_ICONS = { 1: '️', 2: '️', 3: '', 4: '', 5: '' };
-
-function updateProgressBar(pct) {
-  const bar = $('progress-bar');
-  const disp = $('progress-pct-display');
-  const aria = document.querySelector('.overall-progress');
-  if (bar)  { bar.style.width = `${pct}%`; }
-  if (disp) { disp.textContent = `${pct}%`; }
-  if (aria) { aria.setAttribute('aria-valuenow', pct); }
-}
-
-function updateStepCard(step, status, message) {
-  const card = $(`step-${step}`);
-  const statusEl = $(`step-${step}-status`);
-  if (!card || !statusEl) return;
-
-  card.className = 'step-card';
-  if (status === 'running') {
-    card.classList.add('running');
-    statusEl.innerHTML = `<span class="spinner" aria-hidden="true"></span> Running`;
-  } else if (status === 'done') {
-    card.classList.add('done');
-    statusEl.textContent = ' Done';
-    // Mark all prior steps as done too
-    for (let i = 1; i < step; i++) {
-      $(`step-${i}`)?.classList.remove('running');
-      $(`step-${i}`)?.classList.add('done');
-      if ($(`step-${i}-status`)) $(`step-${i}-status`).textContent = ' Done';
-    }
-  } else if (status === 'failed') {
-    card.classList.add('failed');
-    statusEl.textContent = ' Failed';
-  }
-}
-
-function addSceneCard(scene) {
-  const gallery = $('scene-gallery');
-  if (!gallery) return;
-
-  const apiUrl = getApiUrl();
-  const card = document.createElement('div');
-  card.className = 'scene-card';
-  card.setAttribute('role', 'listitem');
-  card.innerHTML = `
-    ${scene.image_url
-      ? `<img class="scene-card-img" src="${apiUrl}${scene.image_url}" alt="Scene ${scene.scene_id} image" loading="lazy" />`
-      : `<div class="scene-card-img placeholder" aria-hidden="true"></div>`
-    }
-    <div class="scene-card-body">
-      <div class="scene-card-id">SCENE ${scene.scene_id}</div>
-      <div class="scene-card-mood">${scene.mood || '—'}</div>
-      <div class="scene-card-narration" lang="km">${scene.narration_preview || ''}</div>
-    </div>
-  `;
-  gallery.appendChild(card);
-}
-
-// ─────────────────────────────────────────────
-// FETCH JOB & POPULATE OUTPUTS
-// ─────────────────────────────────────────────
-
-async function fetchJobAndShowOutputs(jobId) {
-  try {
-    const apiUrl = getApiUrl();
-    const res = await fetch(`${apiUrl}/api/job/${jobId}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const job = await res.json();
-
-    // Populate scene gallery
-    const gallery = $('scene-gallery');
-    if (gallery) gallery.innerHTML = '';
-    (job.scene_previews || []).forEach(addSceneCard);
-
-    // Story title
-    const storyTitle = job.outputs?.story_title || 'Your Story';
-    $('output-story-name').textContent = storyTitle;
-    $('progress-story-name').textContent = storyTitle;
-
-    // Show output section
-    showOutputView(job.outputs);
-
-    // Load metadata
-    const metaRes = await fetch(`${apiUrl}/api/metadata/${jobId}`);
-    if (metaRes.ok) {
-      const meta = await metaRes.json();
-      populateMetadata(meta, jobId);
-    }
-
-    setGenerateButtonState('idle');
-    showToast(' Your videos are ready!', 'success');
-
-  } catch (err) {
-    setGenerateButtonState('idle');
-    showToast(`Could not load results: ${err.message}`, 'error');
-  }
-}
-
-// ─────────────────────────────────────────────
-// POPULATE OUTPUT VIEW
-// ─────────────────────────────────────────────
-
-function showOutputView(outputs) {
-  const apiUrl = getApiUrl();
-
-  // Mobile video
-  if (outputs?.video_mobile) {
-    const src = `${apiUrl}${outputs.video_mobile}`;
-    $('video-mobile-src').src = src;
-    $('video-mobile').load();
-    $('placeholder-mobile').style.display = 'none';
-    $('dl-mobile').href = src;
-  }
-
-  // Laptop video
-  if (outputs?.video_laptop) {
-    const src = `${apiUrl}${outputs.video_laptop}`;
-    $('video-laptop-src').src = src;
-    $('video-laptop').load();
-    $('placeholder-laptop').style.display = 'none';
-    $('dl-laptop').href = src;
-  }
-
-  // Stats
-  if (outputs?.total_scenes)    { /* could update stat chips */ }
-  if (outputs?.total_duration_s) { /* could show duration */ }
-
-  $('output-section').style.display = 'block';
-  $('output-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function populateMetadata(meta, jobId) {
-  const apiUrl = getApiUrl();
-
-  // Title variants
-  const titlesEl = $('title-variants');
-  if (titlesEl) {
-    titlesEl.innerHTML = '';
-    (meta.title_variants || []).forEach(title => {
-      const div = document.createElement('div');
-      div.className = 'title-variant';
-      div.setAttribute('role', 'listitem');
-      div.textContent = title;
-      div.addEventListener('click', () => {
-        navigator.clipboard.writeText(title).then(() => showToast('Title copied!', 'success'));
-      });
-      titlesEl.appendChild(div);
-    });
-  }
-
-  // Descriptions
-  if ($('desc-khmer'))   $('desc-khmer').textContent = meta.description_khmer || '—';
-  if ($('desc-english')) $('desc-english').textContent = meta.description_english || '—';
-
-  // Hashtags
-  const cloud = $('hashtags-cloud');
-  if (cloud) {
-    cloud.innerHTML = '';
-    (meta.hashtags || []).forEach(tag => {
-      const span = document.createElement('span');
-      const isKhmer = /[\u1780-\u17FF]/.test(tag);
-      const isViralTag = ['#fyp','#foryoupage','#storytime','#animatedstory'].includes(tag.toLowerCase());
-      span.className = `hashtag ${isKhmer ? 'hashtag-khmer' : isViralTag ? 'hashtag-viral' : 'hashtag-english'}`;
-      span.textContent = tag;
-      span.setAttribute('role', 'listitem');
-      span.addEventListener('click', () => {
-        navigator.clipboard.writeText(tag).then(() => showToast(`${tag} copied!`, 'success'));
-      });
-      cloud.appendChild(span);
-    });
-    if ($('hashtag-count')) $('hashtag-count').textContent = `(${meta.hashtags?.length || 0})`;
-  }
-
-  // Best post time
-  if ($('best-post-time')) $('best-post-time').textContent = meta.best_post_time || '—';
-
-  // Store caption URL for copy
-  $('btn-copy-caption').dataset.captionUrl = `${apiUrl}/api/caption/${jobId}`;
-}
-
-// ─────────────────────────────────────────────
-// COPY CAPTION
-// ─────────────────────────────────────────────
-
-async function handleCopyCaption() {
-  const btn = $('btn-copy-caption');
-  const url = btn.dataset.captionUrl;
-
-  try {
-    if (url) {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Caption not available');
-      const text = await res.text();
-      await navigator.clipboard.writeText(text);
-    } else {
-      // Fallback: build caption from DOM
-      const titles = [...document.querySelectorAll('.title-variant')].map(el => el.textContent).join('\n');
-      const desc = $('desc-khmer')?.textContent || '';
-      const hashtags = [...document.querySelectorAll('.hashtag')].map(el => el.textContent).join(' ');
-      await navigator.clipboard.writeText(`${titles}\n\n${desc}\n\n${hashtags}`);
-    }
-    btn.classList.add('copied');
-    btn.textContent = ' Caption Copied!';
-    showToast('Full caption copied to clipboard!', 'success');
-    setTimeout(() => {
-      btn.classList.remove('copied');
-      btn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-         Copy Full Caption to Clipboard
-      `;
-    }, 3000);
-  } catch (err) {
-    showToast('Copy failed. Please copy manually.', 'error');
-  }
-}
-
-// ─────────────────────────────────────────────
-// STORY PREVIEW MODAL
-// ─────────────────────────────────────────────
-
-async function handlePreviewStory() {
-  const prompt = $('story-prompt')?.value?.trim();
+// ── SCENE BREAKDOWN PREVIEW MODAL ────────────────────────────
+async function handlePreviewScenes() {
+  const prompt = currentMode === 'paste_story' ? $('story-text')?.value?.trim() : $('story-prompt')?.value?.trim();
   if (!prompt || prompt.length < 10) {
-    showToast('Please enter a story prompt first.', 'error');
+    showToast('Please enter a story prompt or script first.', 'error');
     return;
   }
 
-  const btn = $('btn-preview-story');
-  btn.textContent = ' Generating preview…';
-  btn.disabled = true;
+  const modal = $('preview-modal');
+  const content = $('preview-modal-content');
+  modal.classList.remove('hidden');
+  content.innerHTML = `
+    <div class="loading-spinner-box">
+      <div class="studio-spinner"></div>
+      <p style="margin-top: 14px; font-size: 0.88rem; color: var(--text-secondary);">Structuring scenes with Gemini 3.6 Flash...</p>
+    </div>
+  `;
 
   try {
     const apiUrl = getApiUrl();
     const res = await fetch(`${apiUrl}/api/generate-story`, {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        prompt,
-        num_scenes: parseInt($('range-scenes')?.value || '6'),
-        style:      selectedStyle,
-      }),
+      body: JSON.stringify({
+        prompt: prompt,
+        num_scenes: parseInt($('num-scenes')?.value || '6', 10),
+        style: selectedStyle
+      })
     });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `HTTP ${res.status}`);
-    }
-
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
     const data = await res.json();
     previewedScenes = data;
-    showPreviewModal(data);
 
-  } catch (err) {
-    showToast(`Preview failed: ${err.message}`, 'error');
-  } finally {
-    btn.textContent = ' Preview Story Scenes First';
-    btn.disabled = false;
-  }
-}
+    let scenesHtml = `
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 1.1rem; color: var(--gold-bright);">${data.story_title || 'Untitled'}</h4>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">${data.story_title_en || ''}</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+    `;
 
-function showPreviewModal(data) {
-  $('modal-story-title').textContent = `${data.story_title} — ${data.story_title_en}`;
-
-  const list = $('preview-scene-list');
-  list.innerHTML = '';
-  (data.scenes || []).forEach(scene => {
-    const item = document.createElement('div');
-    item.className = 'preview-scene-item';
-    item.setAttribute('role', 'listitem');
-    item.innerHTML = `
-      <div class="preview-scene-num" aria-label="Scene ${scene.scene_id}">${scene.scene_id}</div>
-      <div>
-        <div class="preview-scene-narration" lang="km">${scene.khmer_narration}</div>
-        <div class="preview-scene-prompt">${scene.visual_prompt}</div>
-        <div style="margin-top:6px;">
-          <span class="scene-card-mood" style="display:inline-block; padding:2px 8px; border-radius:10px; background:var(--purple-dim); color:var(--purple-light); font-size:11px; font-weight:600;">${scene.mood}</span>
-          <span style="font-size:11px; color:var(--text-muted); margin-left:8px;">~${scene.duration_hint_seconds}s</span>
+    data.scenes.forEach(s => {
+      scenesHtml += `
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 12px 14px; border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-weight: 700; font-size: 0.8rem; color: var(--gold);">Scene ${s.scene_id}</span>
+            <span style="font-size: 0.72rem; color: var(--violet-light);">${s.mood}</span>
+          </div>
+          <p style="font-family: 'Noto Sans Khmer', sans-serif; font-size: 0.88rem; color: var(--text-khmer); line-height: 1.6;">${s.khmer_narration}</p>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;"><strong>Visual:</strong> ${s.visual_prompt}</p>
         </div>
+      `;
+    });
+
+    scenesHtml += `</div>`;
+    content.innerHTML = scenesHtml;
+  } catch (err) {
+    content.innerHTML = `
+      <div style="padding: 20px; text-align: center; color: var(--rose);">
+        <p>Failed to generate scene breakdown: ${err.message}</p>
       </div>
     `;
-    list.appendChild(item);
-  });
-
-  $('story-preview-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-  $('story-preview-modal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-async function handleRunFromModal() {
-  closeModal();
-  if (!previewedScenes) return;
-  // Populate the prompt field with the story title so pipeline uses same story
-  const prompt = $('story-prompt');
-  if (prompt && previewedScenes.story_title) {
-    prompt.value = previewedScenes.story_title;
   }
-  await handleGenerate();
 }
 
-// ─────────────────────────────────────────────
-// VIEW TRANSITIONS
-// ─────────────────────────────────────────────
-
-function showProgressView() {
-  $('progress-section').style.display = 'block';
-  $('output-section').style.display = 'none';
-  $('scene-gallery').innerHTML = '';
-  $('progress-story-name').textContent = 'Generating…';
-  updateProgressBar(0);
-
-  // Reset all step cards
-  for (let i = 1; i <= 5; i++) {
-    const card = $(`step-${i}`);
-    const status = $(`step-${i}-status`);
-    if (card)   card.className = 'step-card';
-    if (status) status.textContent = 'Waiting…';
-  }
-
-  $('progress-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function closePreviewModal(e) {
+  $('preview-modal')?.classList.add('hidden');
 }
 
-function hideProgressView() {
-  $('progress-section').style.display = 'none';
+function confirmPreviewAndGenerate() {
+  closePreviewModal();
+  handleGenerate();
 }
 
-function handleNewRun() {
-  if (currentEventSource) { currentEventSource.close(); currentEventSource = null; }
-  currentJobId = null;
-  $('output-section').style.display = 'none';
-  $('progress-section').style.display = 'none';
-  $('input-view').scrollIntoView({ behavior: 'smooth' });
-  // Reset video players
-  $('video-mobile').pause();
-  $('video-laptop').pause();
-  $('placeholder-mobile').style.display = 'flex';
-  $('placeholder-laptop').style.display = 'flex';
+// ── PRICING & SAAS PLANS MODAL ───────────────────────────────
+function openPricingModal() {
+  $('pricing-modal')?.classList.remove('hidden');
 }
 
-// ─────────────────────────────────────────────
-// GENERATE BUTTON STATES
-// ─────────────────────────────────────────────
+function closePricingModal(e) {
+  $('pricing-modal')?.classList.add('hidden');
+}
 
-function setGenerateButtonState(state) {
-  const btn = $('btn-generate');
-  if (!btn) return;
-  if (state === 'loading') {
-    btn.disabled = true;
-    btn.innerHTML = '<div class="btn-shine" aria-hidden="true"></div><span class="spinner" aria-hidden="true"></span> Pipeline Running…';
+function selectPlan(tier) {
+  closePricingModal();
+  if (tier === 'pro') {
+    showToast('Creator Pro Plan activated for this session', 'success');
   } else {
-    btn.disabled = false;
-    btn.innerHTML = '<div class="btn-shine" aria-hidden="true"></div> Generate Video';
+    showToast(`Selected ${tier.toUpperCase()} tier`, 'info');
   }
 }
 
-// ─────────────────────────────────────────────
-// TOAST NOTIFICATIONS
-// ─────────────────────────────────────────────
+// ── PIPELINE EXECUTION & REALTIME SSE STREAM ─────────────────
+async function handleGenerate() {
+  const prompt = currentMode === 'paste_story' ? $('story-text')?.value?.trim() : $('story-prompt')?.value?.trim();
+  if (!prompt || prompt.length < 10) {
+    showToast('Please enter a story or prompt with at least 10 characters.', 'error');
+    return;
+  }
 
+  const apiUrl = getApiUrl();
+  const numScenes = parseInt($('num-scenes')?.value || '6', 10);
+  const exportProfile = $('export-profile')?.value || 'both';
+  const ttsProvider = $('tts-provider')?.value || 'gtts';
+  const imageProvider = $('image-provider')?.value || 'gemini_imagen';
+
+  // Switch UI to Progress View
+  $('progress-view')?.classList.remove('hidden');
+  $('results-view')?.classList.add('hidden');
+  $('progress-view')?.scrollIntoView({ behavior: 'smooth' });
+
+  updateProgress(0, 'Initializing pipeline...', 'running', 1);
+  appendLog(`[START] Triggered job: "${prompt.slice(0, 40)}..." (${numScenes} scenes, ${exportProfile})`);
+
+  try {
+    const res = await fetch(`${apiUrl}/api/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: prompt,
+        mode: currentMode,
+        num_scenes: numScenes,
+        export_profile: exportProfile,
+        tts_provider: ttsProvider,
+        image_provider: imageProvider,
+        story_style: selectedStyle
+      })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    currentJobId = data.job_id;
+    appendLog(`[JOB] Assigned Job ID: ${currentJobId}`);
+
+    listenToSseProgress(apiUrl, currentJobId);
+  } catch (err) {
+    showToast(`Generation failed: ${err.message}`, 'error');
+    appendLog(`[ERROR] ${err.message}`);
+    updateProgress(0, `Error: ${err.message}`, 'failed', 1);
+  }
+}
+
+function listenToSseProgress(apiUrl, jobId) {
+  if (currentEventSource) {
+    currentEventSource.close();
+  }
+
+  const sseUrl = `${apiUrl}/api/progress/${jobId}`;
+  currentEventSource = new EventSource(sseUrl);
+
+  currentEventSource.onmessage = (event) => {
+    if (!event.data) return;
+    try {
+      const payload = JSON.parse(event.data);
+      handleProgressEvent(payload);
+    } catch (e) {}
+  };
+
+  currentEventSource.onerror = () => {
+    // If SSE drops, poll job status as fallback
+    pollJobStatus(apiUrl, jobId);
+  };
+}
+
+function handleProgressEvent(data) {
+  const { step, progress_pct, message, status } = data;
+  updateProgress(progress_pct, message, status, step);
+  appendLog(`[STEP ${step || 0}] ${message} (${progress_pct}%)`);
+
+  if (progress_pct >= 100 || status === 'done') {
+    if (currentEventSource) currentEventSource.close();
+    showToast('Video rendering complete!', 'success');
+    fetchCompletedJob(getApiUrl(), currentJobId);
+  } else if (status === 'failed') {
+    if (currentEventSource) currentEventSource.close();
+    showToast(`Pipeline stopped: ${message}`, 'error');
+  }
+}
+
+async function pollJobStatus(apiUrl, jobId) {
+  try {
+    const res = await fetch(`${apiUrl}/api/jobs`);
+    if (!res.ok) return;
+    const jobs = await res.json();
+    const curr = jobs.find(j => j.id === jobId);
+    if (curr) {
+      updateProgress(curr.progress_pct, curr.message || '', curr.status, curr.step || 1);
+      if (curr.status === 'done') {
+        fetchCompletedJob(apiUrl, jobId);
+      }
+    }
+  } catch (e) {}
+}
+
+function updateProgress(pct, msg, status, step) {
+  $('progress-pct-val').textContent = pct;
+  $('progress-bar-fill').style.width = `${pct}%`;
+  $('progress-msg').textContent = msg;
+
+  // Stepper highlight
+  for (let i = 1; i <= 5; i++) {
+    const node = $(`node-step-${i}`);
+    const stateLabel = $(`state-step-${i}`);
+    if (!node) continue;
+
+    if (i < step || (i === 5 && pct >= 100)) {
+      node.className = 'step-node done';
+      if (stateLabel) stateLabel.textContent = 'Complete';
+    } else if (i === step) {
+      node.className = 'step-node running';
+      if (stateLabel) stateLabel.textContent = 'Running';
+    } else {
+      node.className = 'step-node';
+      if (stateLabel) stateLabel.textContent = 'Waiting';
+    }
+  }
+}
+
+function appendLog(line) {
+  const logs = $('terminal-logs');
+  if (!logs) return;
+  const div = document.createElement('div');
+  div.className = 'log-line';
+  const time = new Date().toLocaleTimeString();
+  div.textContent = `[${time}] ${line}`;
+  logs.appendChild(div);
+  logs.scrollTop = logs.scrollHeight;
+}
+
+// ── COMPLETED JOB DISPLAY ────────────────────────────────────
+async function fetchCompletedJob(apiUrl, jobId) {
+  try {
+    const res = await fetch(`${apiUrl}/api/jobs`);
+    if (!res.ok) return;
+    const jobs = await res.json();
+    const job = jobs.find(j => j.id === jobId);
+    if (!job) return;
+
+    $('progress-view')?.classList.add('hidden');
+    $('results-view')?.classList.remove('hidden');
+    $('results-view')?.scrollIntoView({ behavior: 'smooth' });
+
+    $('out-story-title').textContent = job.story_title || 'Khmer AI Video';
+
+    // Populate video players
+    const mobileVideoUrl = `${apiUrl}/api/video/${jobId}/mobile`;
+    const laptopVideoUrl = `${apiUrl}/api/video/${jobId}/laptop`;
+
+    const mobilePlayer = $('video-player-mobile');
+    const laptopPlayer = $('video-player-laptop');
+
+    if (mobilePlayer) {
+      mobilePlayer.src = mobileVideoUrl;
+      $('btn-dl-mobile').href = mobileVideoUrl;
+    }
+    if (laptopPlayer) {
+      laptopPlayer.src = laptopVideoUrl;
+      $('btn-dl-laptop').href = laptopVideoUrl;
+    }
+
+    // Populate metadata
+    $('out-caption-box').value = `${job.story_title || ''}\n\n#KhmerStory #រឿងខ្មែរ #KhmerAI #TikTokCambodia #CambodiaCinema`;
+  } catch (e) {}
+}
+
+function handleReset() {
+  $('results-view')?.classList.add('hidden');
+  $('progress-view')?.classList.add('hidden');
+  $('studio-view-container')?.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── PROJECT HISTORY ──────────────────────────────────────────
+async function fetchRecentJobs() {
+  const grid = $('project-history-grid');
+  if (!grid) return;
+
+  const apiUrl = getApiUrl();
+  try {
+    const res = await fetch(`${apiUrl}/api/jobs`);
+    if (!res.ok) return;
+    const jobs = await res.json();
+
+    if (!jobs || jobs.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <p>No previous projects found. Create your first video in Video Studio!</p>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = jobs.map(j => `
+      <div style="background: var(--bg-surface-elev); border: 1px solid var(--border-subtle); border-radius: var(--r-md); padding: 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--gold);">ID: ${j.id}</span>
+          <h4 style="font-size: 1rem; color: var(--text-khmer); margin: 4px 0;">${j.story_title || j.prompt.slice(0, 35)}...</h4>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">${j.created_at ? new Date(j.created_at).toLocaleString() : ''}</span>
+        </div>
+        <div>
+          <button class="btn-ghost-sm" onclick="fetchCompletedJob('${apiUrl}', '${j.id}')">View Videos</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {}
+}
+
+// ── CLIPBOARD COPY UTILITY ───────────────────────────────────
+function copyText(elementId) {
+  const el = $(elementId);
+  if (!el) return;
+  const text = el.value || el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied to clipboard', 'success');
+  }).catch(() => {
+    showToast('Failed to copy', 'error');
+  });
+}
+
+// ── TOAST NOTIFICATIONS ─────────────────────────────────────
 function showToast(message, type = 'info') {
   const container = $('toast-container');
   if (!container) return;
 
   const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  const icons = { success: '', error: '', info: 'ℹ️' };
-  toast.innerHTML = `<span aria-hidden="true">${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
-  toast.setAttribute('role', 'alert');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
 
   container.appendChild(toast);
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateX(20px)';
-    toast.style.transition = 'all 0.3s ease';
-    setTimeout(() => toast.remove(), 400);
+    setTimeout(() => toast.remove(), 300);
   }, 4000);
 }
-
-// ─────────────────────────────────────────────
-// KEYBOARD ACCESSIBILITY
-// ─────────────────────────────────────────────
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModal();
-});

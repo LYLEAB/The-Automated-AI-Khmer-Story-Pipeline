@@ -3,465 +3,626 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Khmer Story Pipeline — AI Video Generator</title>
-  <meta name="description" content="Automated AI pipeline that turns Khmer story prompts into cinematic social media videos for TikTok and Facebook Reels." />
-  <meta property="og:title" content="Khmer Story Pipeline" />
-  <meta property="og:description" content="Generate cinematic Khmer story videos with AI in minutes." />
-  <meta property="og:type" content="website" />
+  <title>KhmerAI Studio — Automated AI Khmer Story & Video Pipeline</title>
+  <meta name="description" content="Production-grade AI platform that turns story prompts into cinematic Khmer videos for TikTok, Facebook Reels, and YouTube." />
   <link rel="stylesheet" href="style.css" />
-  <!-- Fonts preloaded for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Khmer:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-<!-- ── NAVBAR ─────────────────────────────────────────────── -->
-<nav id="navbar" role="navigation" aria-label="Main navigation">
-  <div class="nav-logo">
-    <h1>Khmer Story Pipeline</h1>
-  </div>
-  <div class="nav-links">
-    <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline"
-       target="_blank" rel="noopener" class="nav-link" id="nav-github">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-      </svg>
-      GitHub
-    </a>
-    <a href="#" class="nav-link" id="nav-docs">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/>
-      </svg>
-      Docs
-    </a>
-  </div>
-</nav>
-
-<!-- ── HERO ──────────────────────────────────────────────────── -->
-<section id="hero" aria-label="Hero section">
-  <h2 class="hero-title">Turn Stories Into Viral Videos</h2>
-  <p class="hero-subtitle">
-    Paste a Khmer story or let AI generate one — then watch the pipeline
-    create a cinematic video ready for TikTok and Facebook Reels.
-  </p>
-  <p class="hero-khmer" lang="km">ប្រែក្លាយរឿងខ្មែររបស់អ្នកទៅជាវីដេអូ AI ដ៏គួរឱ្យចាប់អារម្មណ៍</p>
-</section>
-
-<!-- ── MAIN CONTENT ───────────────────────────────────────────── -->
-<main id="main-content">
-
-  <!-- INPUT + SETTINGS (default view) -->
-  <div id="input-view">
-    <div class="two-col">
-
-      <!-- LEFT: Input Panel -->
-      <div id="input-panel" class="glass glass-gold">
-        <p class="panel-title">Story Input</p>
-
-        <!-- Mode Tabs -->
-        <div class="mode-tabs" role="tablist" aria-label="Story input mode">
-          <button class="mode-tab active" id="tab-paste" role="tab" aria-selected="true" aria-controls="pane-paste">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Paste Story
-          </button>
-          <button class="mode-tab" id="tab-ai" role="tab" aria-selected="false" aria-controls="pane-ai">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            AI Generate
-          </button>
-        </div>
-
-        <!-- Tab: Paste Story -->
-        <div class="tab-pane active" id="pane-paste" role="tabpanel" aria-labelledby="tab-paste">
-          <label class="field-label" for="story-text">
-            Paste your story below — Khmer or English text accepted
-          </label>
-          <textarea
-            id="story-text"
-            placeholder="ដាក់ស្នៀតរឿងរ៉ាវរបស់អ្នកនៅទីនេះ…&#10;&#10;Paste your Khmer or English story here. Gemini will structure it into scenes automatically."
-            aria-label="Story text input"
-            spellcheck="false"
-          ></textarea>
-          <div style="display:flex; justify-content:space-between; margin-top:8px;">
-            <span style="font-size:12px; color:var(--text-muted);">
-              Gemini will auto-structure this into visual scenes
-            </span>
-            <span id="char-count" style="font-size:12px; color:var(--text-muted);">0 chars</span>
-          </div>
-        </div>
-
-        <!-- Tab: AI Generate -->
-        <div class="tab-pane" id="pane-ai" role="tabpanel" aria-labelledby="tab-ai">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label class="field-label" for="story-prompt" style="margin-bottom:0;">
-              Describe the story you want AI to write
-            </label>
-            <button id="btn-surprise-me" class="btn-surprise" aria-label="Generate random prompt idea">
-              Surprise Me
-            </button>
-          </div>
-          <textarea
-            id="story-prompt"
-            placeholder="e.g. រឿងកុលាបប៉ៃលិន — a Khmer princess who discovers a magical rose garden&#10;&#10;Or in English: A brave Khmer warrior who protects his village from a demon king"
-            aria-label="AI story prompt"
-            spellcheck="false"
-          ></textarea>
-
-          <div style="margin-top: 16px;">
-            <label class="field-label">Story Style & Mood</label>
-            <div class="style-chips" role="group" aria-label="Story mood">
-              <button class="style-chip active" data-style="dramatic">Dramatic</button>
-              <button class="style-chip" data-style="mysterious">Mysterious</button>
-              <button class="style-chip" data-style="romantic">Romantic</button>
-              <button class="style-chip" data-style="triumphant">Heroic</button>
-              <button class="style-chip" data-style="peaceful">Peaceful</button>
-              <button class="style-chip" data-style="melancholic">Melancholic</button>
-            </div>
-          </div>
-
-          <button id="btn-preview-story" aria-label="Preview AI generated story scenes">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-            Preview Story Scenes First
-          </button>
-        </div>
+<!-- ── TOP NAVBAR ───────────────────────────────────────────── -->
+<header id="top-navbar" role="banner">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
       </div>
-
-      <!-- RIGHT: Settings Panel -->
-      <div id="settings-panel" class="glass">
-        <p class="panel-title">Pipeline Settings</p>
-
-        <!-- Scene Count -->
-        <div class="slider-group">
-          <div class="slider-header">
-            <label class="slider-label" for="range-scenes">Number of Scenes</label>
-            <span class="slider-value" id="scenes-val">6</span>
-          </div>
-          <input
-            type="range"
-            id="range-scenes"
-            min="3" max="12" value="6" step="1"
-            aria-label="Number of scenes"
-            aria-valuemin="3" aria-valuemax="12" aria-valuenow="6"
-          />
-          <div style="display:flex; justify-content:space-between; margin-top:4px;">
-            <span style="font-size:11px; color:var(--text-muted);">3 (fast)</span>
-            <span style="font-size:11px; color:var(--text-muted);">12 (full story)</span>
-          </div>
-        </div>
-
-        <!-- Export Profile -->
-        <div class="select-group">
-          <label class="field-label" for="sel-profile">Video Export</label>
-          <select id="sel-profile" aria-label="Export profile">
-            <option value="both">Both (Mobile + Laptop)</option>
-            <option value="mobile">Mobile Only (9:16 TikTok/Reels)</option>
-            <option value="laptop">Laptop Only (16:9 YouTube)</option>
-          </select>
-        </div>
-
-        <!-- TTS Provider -->
-        <div class="select-group">
-          <label class="field-label" for="sel-tts">Voice (TTS Provider)</label>
-          <select id="sel-tts" aria-label="TTS provider">
-            <option value="gtts">gTTS (Free — no key needed)</option>
-            <option value="google_tts">Google Cloud TTS (Best quality)</option>
-            <option value="elevenlabs">ElevenLabs Multilingual</option>
-          </select>
-        </div>
-
-        <!-- Image Provider -->
-        <div class="select-group">
-          <label class="field-label" for="sel-image">Image Generator</label>
-          <select id="sel-image" aria-label="Image provider">
-            <option value="gemini_imagen">Gemini Imagen 3 (Best quality)</option>
-            <option value="stability_ai">Stability AI / SDXL</option>
-          </select>
-        </div>
-
-        <div class="panel-divider"></div>
-
-        <!-- Advanced Settings / API URL -->
-        <details style="margin-top: 10px; font-size: 13px; color: var(--text-muted); cursor: pointer;">
-          <summary style="outline: none; user-select: none;">Advanced Configuration</summary>
-          <div class="select-group" style="margin-top: 10px;">
-            <label class="field-label" for="api-url-input">Backend API URL</label>
-            <input
-              type="text"
-              id="api-url-input"
-              placeholder="https://your-api.railway.app"
-              aria-label="Backend API URL"
-              style="min-height: unset; resize: none; padding: 10px 14px;"
-            />
-            <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">
-              Deploy <code style="color:var(--gold)">api.py</code> to Railway or Render,
-              then paste its URL here.
-            </div>
-          </div>
-        </details>
-
-        <div class="panel-divider"></div>
-
-        <!-- Generate Button -->
-        <button id="btn-generate" aria-label="Generate video">
-          <div class="btn-shine" aria-hidden="true"></div>
-          Generate Video
-        </button>
-
-        <!-- Stats row -->
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:16px; text-align:center;">
-          <div style="padding:12px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm);">
-            <div style="font-size:16px; font-weight:700; color:var(--gold);">~3 min</div>
-            <div style="font-size:10px; color:var(--text-muted);">avg. runtime</div>
-          </div>
-          <div style="padding:12px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm);">
-            <div style="font-size:16px; font-weight:700; color:var(--purple-light);">2</div>
-            <div style="font-size:10px; color:var(--text-muted);">video formats</div>
-          </div>
-          <div style="padding:12px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm);">
-            <div style="font-size:16px; font-weight:700; color:var(--emerald);">5</div>
-            <div style="font-size:10px; color:var(--text-muted);">AI modules</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── PROGRESS VIEW ──────────────────────────────────────── -->
-  <div id="progress-section">
-    <div class="glass" style="padding: 28px; margin-bottom: 20px;">
-      <div class="progress-header">
-        <div>
-          <div class="progress-story-name font-khmer" id="progress-story-name">Generating…</div>
-          <div class="progress-status-text" id="progress-status-text">Starting pipeline…</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:28px; font-weight:800; color:var(--gold); font-family:'Outfit',sans-serif;" id="progress-pct-display">0%</div>
-          <div style="font-size:11px; color:var(--text-muted);">complete</div>
-        </div>
-      </div>
-
-      <!-- Progress Bar -->
-      <div class="overall-progress" role="progressbar" aria-label="Pipeline progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-        <div class="overall-progress-fill" id="progress-bar"></div>
-      </div>
-
-      <!-- Pipeline Steps -->
-      <div class="steps-grid" role="list" aria-label="Pipeline steps">
-        <div class="step-card" id="step-1" role="listitem" data-step="1">
-          <div class="step-name">Script</div>
-          <div class="step-status" id="step-1-status">Waiting…</div>
-        </div>
-        <div class="step-card" id="step-2" role="listitem" data-step="2">
-          <div class="step-name">Audio</div>
-          <div class="step-status" id="step-2-status">Waiting…</div>
-        </div>
-        <div class="step-card" id="step-3" role="listitem" data-step="3">
-          <div class="step-name">Images</div>
-          <div class="step-status" id="step-3-status">Waiting…</div>
-        </div>
-        <div class="step-card" id="step-4" role="listitem" data-step="4">
-          <div class="step-name">Video</div>
-          <div class="step-status" id="step-4-status">Waiting…</div>
-        </div>
-        <div class="step-card" id="step-5" role="listitem" data-step="5">
-          <div class="step-name">Publish</div>
-          <div class="step-status" id="step-5-status">Waiting…</div>
-        </div>
-      </div>
-
-      <!-- Live message -->
-      <div id="live-message" aria-live="polite" aria-label="Live status update">
-        <div class="pulse-dot" aria-hidden="true"></div>
-        <span id="live-message-text">Initializing pipeline…</span>
+      <div class="brand-text">
+        <span class="brand-title">KhmerAI<span class="brand-badge">STUDIO</span></span>
+        <span class="brand-sub">Production Video Pipeline</span>
       </div>
     </div>
 
-    <!-- Scene Gallery (live thumbnails) -->
-    <div class="glass" style="padding: 24px;" id="scene-gallery-card">
-      <p class="panel-title">Generated Scenes</p>
-      <div id="scene-gallery" aria-label="Scene thumbnails"></div>
-    </div>
-  </div>
+    <nav class="nav-menu" aria-label="Main Navigation">
+      <button class="nav-item active" id="nav-btn-studio" onclick="switchMainView('studio')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        Video Studio
+      </button>
+      <button class="nav-item" id="nav-btn-gallery" onclick="switchMainView('gallery')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Projects
+      </button>
+      <button class="nav-item" id="nav-btn-pricing" onclick="openPricingModal()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Plans & Pricing
+      </button>
+      <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline" target="_blank" rel="noopener" class="nav-item nav-link-external">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </nav>
 
-  <!-- ── OUTPUT VIEW ────────────────────────────────────────── -->
-  <div id="output-section">
-    <!-- Header -->
-    <div class="output-header">
-      <div>
-        <div class="output-story-name font-khmer" id="output-story-name">—</div>
-        <h2 class="output-title">Your Videos Are Ready</h2>
+    <div class="nav-actions">
+      <div class="system-status-pill" id="system-status-pill">
+        <span class="status-dot"></span>
+        <span class="status-label">Cloud Pipeline Live</span>
       </div>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <div class="success-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-          Complete
-        </div>
-        <button id="btn-new-run" aria-label="Start a new story">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-          New Story
-        </button>
-      </div>
-    </div>
-
-    <!-- VIDEO PLAYERS -->
-    <div class="video-grid">
-
-      <!-- Mobile 9:16 -->
-      <div class="phone-frame-wrapper">
-        <div style="display:flex; align-items:center; gap:10px; width:100%; justify-content:center;">
-          <span class="video-label">
-            Mobile
-            <span class="video-label-badge badge-tiktok">TikTok</span>
-            <span class="video-label-badge badge-tiktok" style="background:rgba(24,119,242,0.15); color:#4299E1; border-color:rgba(66,153,225,0.3);">Reels</span>
-          </span>
-        </div>
-        <div class="phone-frame">
-          <div class="phone-notch" aria-hidden="true">
-            <div class="phone-notch-cam"></div>
-          </div>
-          <div class="phone-screen">
-            <video id="video-mobile" controls playsinline preload="metadata" aria-label="Mobile format video (9:16)">
-              <source src="" type="video/mp4" id="video-mobile-src" />
-            </video>
-            <div class="video-placeholder" id="placeholder-mobile" aria-hidden="true">
-              <div class="video-placeholder-icon">📱</div>
-              <div>9:16 Video</div>
-            </div>
-          </div>
-          <div class="phone-home-bar" aria-hidden="true"></div>
-        </div>
-        <div class="download-btns">
-          <a id="dl-mobile" href="#" download class="btn-download" aria-label="Download mobile video">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download MP4
-          </a>
-        </div>
-      </div>
-
-      <!-- Laptop 16:9 -->
-      <div class="browser-frame-wrapper">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="video-label">
-            Laptop / Desktop
-            <span class="video-label-badge badge-youtube">YouTube</span>
-            <span class="video-label-badge badge-tiktok" style="background:rgba(24,119,242,0.15); color:#4299E1; border-color:rgba(66,153,225,0.3);">Facebook</span>
-          </span>
-        </div>
-        <div class="browser-frame">
-          <div class="browser-chrome" aria-hidden="true">
-            <div class="browser-dots">
-              <div class="browser-dot browser-dot-r"></div>
-              <div class="browser-dot browser-dot-y"></div>
-              <div class="browser-dot browser-dot-g"></div>
-            </div>
-            <div class="browser-url-bar">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              khmer-story-pipeline.vercel.app
-            </div>
-          </div>
-          <div class="browser-screen">
-            <video id="video-laptop" controls preload="metadata" aria-label="Laptop format video (16:9)">
-              <source src="" type="video/mp4" id="video-laptop-src" />
-            </video>
-            <div class="video-placeholder" id="placeholder-laptop" aria-hidden="true">
-              <div class="video-placeholder-icon">💻</div>
-              <div>16:9 Video</div>
-            </div>
-          </div>
-        </div>
-        <div class="download-btns">
-          <a id="dl-laptop" href="#" download class="btn-download" aria-label="Download laptop video">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download MP4
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- METADATA CARD -->
-    <div id="metadata-card" class="glass glass-gold">
-
-      <!-- Title Variants -->
-      <div class="meta-section-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-        Title Options <span style="color:var(--text-muted); font-weight:400;">(click to copy)</span>
-      </div>
-      <div class="title-variants" id="title-variants" role="list"></div>
-
-      <!-- Descriptions -->
-      <div class="meta-section-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Descriptions
-      </div>
-      <div class="description-cols">
-        <div class="desc-block">
-          <div class="desc-lang-tag">🇰🇭 Khmer</div>
-          <div class="desc-text khmer-text" id="desc-khmer" lang="km">—</div>
-        </div>
-        <div class="desc-block">
-          <div class="desc-lang-tag">🇬🇧 English</div>
-          <div class="desc-text" id="desc-english">—</div>
-        </div>
-      </div>
-
-      <!-- Hashtags -->
-      <div class="meta-section-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
-        Hashtags <span style="color:var(--text-muted); font-weight:400;" id="hashtag-count"></span>
-      </div>
-      <div class="hashtags-cloud" id="hashtags-cloud" role="list" aria-label="Hashtags"></div>
-
-      <!-- Best Post Time -->
-      <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--r-sm); margin-bottom:20px;">
-        <span style="font-size:20px;" aria-hidden="true">⏰</span>
-        <div>
-          <div style="font-size:11px; color:var(--text-muted); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;">Best Posting Time</div>
-          <div style="font-size:14px; color:var(--text-primary);" id="best-post-time">—</div>
-        </div>
-      </div>
-
-      <!-- Copy Caption Button -->
-      <button id="btn-copy-caption" aria-label="Copy full caption to clipboard">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        📋 Copy Full Caption to Clipboard
+      <button class="btn-tier-badge" onclick="openPricingModal()">
+        <span class="tier-tag">PRO</span>
+        <span class="tier-action">Upgrade</span>
       </button>
     </div>
   </div>
+</header>
 
+<!-- ── HERO HEADER ───────────────────────────────────────────── -->
+<section id="hero-banner">
+  <div class="hero-content">
+    <div class="hero-tag">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+      <span>Next-Gen Khmer Content Engine</span>
+    </div>
+    <h1 class="hero-heading">Create Viral Khmer Videos With AI</h1>
+    <p class="hero-khmer" lang="km">ប្រព័ន្ធស្វ័យប្រវត្តផលិតវីដេអូ AI ភាសាខ្មែរ កម្រិតភាពយន្ត សម្រាប់ TikTok, Facebook Reels និង YouTube</p>
+  </div>
+</section>
+
+<!-- ── MAIN STUDIO APP ───────────────────────────────────────── -->
+<main id="app-viewport">
+  <div class="studio-layout" id="studio-view-container">
+
+    <!-- ── LEFT: SCRIPT & STORY SUITE ── -->
+    <div class="studio-col script-col">
+      <div class="studio-card glass-panel">
+        <div class="card-header">
+          <div class="header-left">
+            <span class="step-num">01</span>
+            <div>
+              <h2 class="card-title">Story Engine</h2>
+              <p class="card-desc">Scriptwriting & Scene Structuring</p>
+            </div>
+          </div>
+          <div class="header-right">
+            <button class="btn-ghost-sm" id="btn-surprise" onclick="handleSurpriseMe()" title="Generate viral story concept">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Surprise Me
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode Selectors -->
+        <div class="mode-bar" role="tablist">
+          <button class="mode-btn active" id="tab-ai" role="tab" onclick="switchMode('ai_generate')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            AI Generator
+          </button>
+          <button class="mode-btn" id="tab-paste" role="tab" onclick="switchMode('paste_story')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Custom Script
+          </button>
+          <button class="mode-btn" id="tab-templates" role="tab" onclick="toggleTemplateDrawer()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Templates
+          </button>
+        </div>
+
+        <!-- Template Selector Drawer -->
+        <div id="template-drawer" class="template-drawer hidden">
+          <p class="drawer-heading">Select Viral Genre Preset</p>
+          <div class="template-grid">
+            <div class="tpl-chip" onclick="applyTemplate('legend')">
+              <span class="tpl-title">រឿងព្រេងបុរាណ</span>
+              <span class="tpl-sub">Ancient Khmer Legend</span>
+            </div>
+            <div class="tpl-chip" onclick="applyTemplate('cyberpunk')">
+              <span class="tpl-title">ភ្នំពេញ ២១៥០</span>
+              <span class="tpl-sub">Cyberpunk Phnom Penh</span>
+            </div>
+            <div class="tpl-chip" onclick="applyTemplate('ghost')">
+              <span class="tpl-title">រឿងខ្មោចព្រាយ</span>
+              <span class="tpl-sub">Midnight Angkor Mystery</span>
+            </div>
+            <div class="tpl-chip" onclick="applyTemplate('romance')">
+              <span class="tpl-title">ស្នេហាកុលាបប៉ៃលិន</span>
+              <span class="tpl-sub">Romantic Drama</span>
+            </div>
+            <div class="tpl-chip" onclick="applyTemplate('bokator')">
+              <span class="tpl-title">ក្បាច់គុនល្បុក្កតោ</span>
+              <span class="tpl-sub">Bokator Martial Warrior</span>
+            </div>
+            <div class="tpl-chip" onclick="applyTemplate('fable')">
+              <span class="tpl-title">រឿងនិទានកំប្លែង</span>
+              <span class="tpl-sub">Moral Comedy Fable</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Fields -->
+        <div class="input-container">
+          <!-- AI Prompt Area -->
+          <div id="pane-ai" class="input-pane active">
+            <label class="field-label" for="story-prompt">Describe your story concept or topic</label>
+            <div class="textarea-wrapper">
+              <textarea
+                id="story-prompt"
+                class="studio-textarea"
+                rows="4"
+                placeholder="e.g. រឿងកុលាបប៉ៃលិន — a touching story about love, loyalty, and redemption in the emerald hills of Pailin..."
+              ></textarea>
+              <div class="char-count" id="prompt-char-count">0 chars</div>
+            </div>
+          </div>
+
+          <!-- Paste Story Area -->
+          <div id="pane-paste" class="input-pane hidden">
+            <label class="field-label" for="story-text">Paste your complete Khmer or English script</label>
+            <div class="textarea-wrapper">
+              <textarea
+                id="story-text"
+                class="studio-textarea"
+                rows="5"
+                placeholder="ដាក់ស្នៀតរឿងរ៉ាវរបស់អ្នកនៅទីនេះ… Gemini will analyze the text and divide it into synchronized cinematic scenes automatically."
+              ></textarea>
+              <div class="char-count" id="text-char-count">0 chars</div>
+            </div>
+          </div>
+
+          <!-- Mood / Style Tags -->
+          <div class="section-block">
+            <label class="field-label">Narrative Mood & Tone</label>
+            <div class="tag-selector" role="group" aria-label="Story Tone">
+              <button class="mood-tag active" data-style="dramatic" onclick="selectStyle('dramatic')">Dramatic</button>
+              <button class="mood-tag" data-style="heroic" onclick="selectStyle('heroic')">Heroic / Epic</button>
+              <button class="mood-tag" data-style="mysterious" onclick="selectStyle('mysterious')">Mysterious</button>
+              <button class="mood-tag" data-style="romantic" onclick="selectStyle('romantic')">Romantic</button>
+              <button class="mood-tag" data-style="peaceful" onclick="selectStyle('peaceful')">Peaceful</button>
+              <button class="mood-tag" data-style="melancholic" onclick="selectStyle('melancholic')">Melancholic</button>
+            </div>
+          </div>
+
+          <!-- Preview Script Trigger -->
+          <div class="preview-action-row">
+            <button class="btn-outline-studio" id="btn-preview-scenes" onclick="handlePreviewScenes()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>Preview AI Scene Breakdown</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: CINEMATIC ENGINE CONFIGURATION ── -->
+    <div class="studio-col config-col">
+      <div class="studio-card glass-panel">
+        <div class="card-header">
+          <div class="header-left">
+            <span class="step-num">02</span>
+            <div>
+              <h2 class="card-title">Production Settings</h2>
+              <p class="card-desc">Visuals, Audio, and Video Formats</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-grid">
+          <!-- Scene Slider -->
+          <div class="config-item span-full">
+            <div class="slider-header">
+              <label class="field-label" for="num-scenes">Story Scene Count</label>
+              <div class="slider-badge"><span id="num-scenes-val">6</span> Scenes (~60s)</div>
+            </div>
+            <input
+              type="range"
+              id="num-scenes"
+              class="studio-slider"
+              min="3"
+              max="12"
+              step="1"
+              value="6"
+              oninput="handleSceneSliderChange(this.value)"
+            />
+            <div class="slider-markers">
+              <span>3 (Short ~30s)</span>
+              <span>6 (Standard ~60s)</span>
+              <span>12 (Epic ~120s)</span>
+            </div>
+          </div>
+
+          <!-- Video Format Selector -->
+          <div class="config-item">
+            <label class="field-label" for="export-profile">Video Export Matrix</label>
+            <div class="select-wrapper">
+              <select id="export-profile" class="studio-select">
+                <option value="both" selected>Dual Export (9:16 + 16:9)</option>
+                <option value="mobile">Mobile 9:16 (TikTok & Reels)</option>
+                <option value="laptop">Landscape 16:9 (YouTube & FB)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Khmer Voice Provider -->
+          <div class="config-item">
+            <label class="field-label" for="tts-provider">Khmer Voice Engine</label>
+            <div class="select-wrapper">
+              <select id="tts-provider" class="studio-select">
+                <option value="gtts" selected>gTTS (Free Tier · Khmer)</option>
+                <option value="google_tts">Google WaveNet (km-KH Studio)</option>
+                <option value="elevenlabs">ElevenLabs Multilingual</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Visual Art Style -->
+          <div class="config-item">
+            <label class="field-label" for="image-provider">AI Art Engine</label>
+            <div class="select-wrapper">
+              <select id="image-provider" class="studio-select">
+                <option value="gemini_imagen" selected>Gemini Imagen 3 (Cinematic)</option>
+                <option value="stability_ai">Stability AI (SDXL Studio)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Motion & Camera -->
+          <div class="config-item">
+            <label class="field-label" for="motion-profile">Camera Motion FX</label>
+            <div class="select-wrapper">
+              <select id="motion-profile" class="studio-select">
+                <option value="dynamic" selected>Dynamic Ken Burns (Cinematic)</option>
+                <option value="zoom_in">Slow Zoom-In (Focus)</option>
+                <option value="pan_left">Dramatic Pan Left</option>
+                <option value="static">Static Frame (Classic)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Subtitle Style & Backdrop -->
+          <div class="config-item span-full">
+            <div class="subtitle-config-row">
+              <div class="check-group">
+                <input type="checkbox" id="subtitles-enabled" class="studio-check" checked />
+                <label for="subtitles-enabled" class="check-label">Burn-In Khmer Unicode Subtitles (Noto Sans)</label>
+              </div>
+              <div class="check-group">
+                <input type="checkbox" id="bg-music-enabled" class="studio-check" checked />
+                <label for="bg-music-enabled" class="check-label">Background Ambient Mix</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Advanced Production Settings Accordion -->
+          <div class="config-item span-full">
+            <details class="advanced-details" id="adv-details">
+              <summary class="adv-summary">
+                <span>Advanced Production & Cloud Endpoint</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <div class="adv-body">
+                <label class="field-label" for="api-url-input">Production Backend API URL</label>
+                <input
+                  type="url"
+                  id="api-url-input"
+                  class="studio-input"
+                  placeholder="https://your-backend.onrender.com (Auto-resolved on localhost)"
+                />
+                <p class="field-hint">Leave blank when running unified or enter your live Render/Railway service URL.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- GENERATE CTA -->
+        <div class="action-footer">
+          <button class="btn-generate-hero" id="btn-generate" onclick="handleGenerate()">
+            <div class="btn-glow"></div>
+            <div class="btn-inner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span class="btn-label">Generate Cinematic Video</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROGRESS & TELEMETRY DASHBOARD ───────────────────────── -->
+  <section id="progress-view" class="progress-section hidden">
+    <div class="studio-card glass-panel progress-card">
+      <div class="progress-header">
+        <div>
+          <span class="pulse-indicator"></span>
+          <h3 class="progress-title" id="progress-status-text">Pipeline Active</h3>
+          <p class="progress-sub" id="progress-msg">Initializing AI components…</p>
+        </div>
+        <div class="progress-pct-display">
+          <span id="progress-pct-val">0</span><span class="unit">%</span>
+        </div>
+      </div>
+
+      <!-- Main Neon Progress Bar -->
+      <div class="neon-progress-track">
+        <div class="neon-progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
+      </div>
+
+      <!-- 5-Stage Stepper Nodes -->
+      <div class="pipeline-stepper">
+        <div class="step-node" id="node-step-1">
+          <div class="node-icon">01</div>
+          <span class="node-name">Script</span>
+          <span class="node-state" id="state-step-1">Waiting</span>
+        </div>
+        <div class="step-connector" id="conn-1-2"></div>
+        <div class="step-node" id="node-step-2">
+          <div class="node-icon">02</div>
+          <span class="node-name">Voice TTS</span>
+          <span class="node-state" id="state-step-2">Waiting</span>
+        </div>
+        <div class="step-connector" id="conn-2-3"></div>
+        <div class="step-node" id="node-step-3">
+          <div class="node-icon">03</div>
+          <span class="node-name">AI Visuals</span>
+          <span class="node-state" id="state-step-3">Waiting</span>
+        </div>
+        <div class="step-connector" id="conn-3-4"></div>
+        <div class="step-node" id="node-step-4">
+          <div class="node-icon">04</div>
+          <span class="node-name">Rendering</span>
+          <span class="node-state" id="state-step-4">Waiting</span>
+        </div>
+        <div class="step-connector" id="conn-4-5"></div>
+        <div class="step-node" id="node-step-5">
+          <div class="node-icon">05</div>
+          <span class="node-name">SEO Publish</span>
+          <span class="node-state" id="state-step-5">Waiting</span>
+        </div>
+      </div>
+
+      <!-- Live Terminal Console Output -->
+      <div class="terminal-box">
+        <div class="terminal-header">
+          <span class="term-dot red"></span>
+          <span class="term-dot yellow"></span>
+          <span class="term-dot green"></span>
+          <span class="term-title">System Stream Telemetry</span>
+        </div>
+        <div class="terminal-logs" id="terminal-logs">
+          <div class="log-line">[SYS] Pipeline initialized. Listening for real-time SSE stream events...</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OUTPUT & DELIVERY THEATER ────────────────────────────── -->
+  <section id="results-view" class="results-section hidden">
+    <div class="results-container">
+      
+      <!-- Result Banner -->
+      <div class="results-header glass-panel">
+        <div class="res-title-col">
+          <span class="success-badge">RENDER COMPLETE</span>
+          <h2 class="res-story-title" id="out-story-title">រឿងកុលាបប៉ៃលិន</h2>
+          <p class="res-story-sub" id="out-story-sub">The Rose of Pailin · 6 Scenes · High Definition</p>
+        </div>
+        <div class="res-actions">
+          <button class="btn-ghost-studio" onclick="handleReset()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Create Another Video
+          </button>
+        </div>
+      </div>
+
+      <div class="theater-grid">
+        <!-- Vertical 9:16 Video Player -->
+        <div class="theater-card glass-panel" id="card-mobile-player">
+          <div class="player-header">
+            <div class="player-tag">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <span>Mobile 9:16 (TikTok / Reels / Shorts)</span>
+            </div>
+            <a id="btn-dl-mobile" class="btn-dl-badge" href="#" download>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download MP4
+            </a>
+          </div>
+          <div class="mockup-phone">
+            <video id="video-player-mobile" controls playsinline class="cinema-video"></video>
+          </div>
+        </div>
+
+        <!-- Landscape 16:9 Video Player -->
+        <div class="theater-card glass-panel" id="card-laptop-player">
+          <div class="player-header">
+            <div class="player-tag">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <span>Landscape 16:9 (YouTube / Facebook)</span>
+            </div>
+            <a id="btn-dl-laptop" class="btn-dl-badge" href="#" download>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download MP4
+            </a>
+          </div>
+          <div class="mockup-widescreen">
+            <video id="video-player-laptop" controls playsinline class="cinema-video"></video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media SEO & Metadata Toolkit -->
+      <div class="metadata-suite glass-panel">
+        <div class="meta-header">
+          <h3 class="meta-title">Social Media SEO & Publishing Suite</h3>
+          <p class="meta-desc">Bilingual titles, viral captions, and hashtags optimized for social algorithms.</p>
+        </div>
+
+        <div class="meta-grid">
+          <!-- Title Variants -->
+          <div class="meta-card">
+            <div class="meta-card-header">
+              <span class="meta-tag">Viral Title Variants</span>
+              <button class="btn-copy-sm" onclick="copyText('out-titles-box')">Copy All</button>
+            </div>
+            <div class="meta-box" id="out-titles-box">
+              <p class="meta-line">1. ដំណើររឿងកុលាបប៉ៃលិនដ៏អស្ចារ្យ</p>
+              <p class="meta-line">2. The Legendary Tale of Pailin | Khmer AI Cinema</p>
+            </div>
+          </div>
+
+          <!-- Hashtags -->
+          <div class="meta-card">
+            <div class="meta-card-header">
+              <span class="meta-tag">Recommended Hashtags</span>
+              <button class="btn-copy-sm" onclick="copyText('out-hashtags-box')">Copy Tags</button>
+            </div>
+            <div class="meta-box hashtag-box" id="out-hashtags-box">
+              #KhmerStory #រឿងខ្មែរ #KhmerAI #AngkorLegend #TikTokCambodia #CambodiaCinema
+            </div>
+          </div>
+
+          <!-- Full Post Caption -->
+          <div class="meta-card span-full">
+            <div class="meta-card-header">
+              <span class="meta-tag">Ready-to-Post Caption</span>
+              <button class="btn-copy-main" onclick="copyText('out-caption-box')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy Caption & Hashtags
+              </button>
+            </div>
+            <textarea id="out-caption-box" class="caption-textarea" rows="4" readonly></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROJECT GALLERY & RECENT JOBS ────────────────────────── -->
+  <section id="gallery-view" class="gallery-section hidden">
+    <div class="gallery-container">
+      <div class="gallery-header">
+        <div>
+          <h2 class="section-title">Your Studio Projects</h2>
+          <p class="section-sub">Previously generated stories and video archives</p>
+        </div>
+        <button class="btn-outline-studio" onclick="fetchRecentJobs()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Refresh History
+        </button>
+      </div>
+
+      <div class="project-grid" id="project-history-grid">
+        <div class="empty-state">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          <p>No previous projects found. Generate your first video!</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
-<!-- ── STORY PREVIEW MODAL ──────────────────────────────────── -->
-<div id="story-preview-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <div class="modal-box">
+<!-- ── PREVIEW SCENES MODAL ──────────────────────────────────── -->
+<div id="preview-modal" class="modal-backdrop hidden" onclick="closePreviewModal(event)">
+  <div class="modal-dialog glass-panel" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <h3 class="modal-title" id="modal-title">Story Preview</h3>
-      <button class="modal-close" id="btn-modal-close" aria-label="Close preview">✕</button>
+      <div>
+        <span class="modal-badge">AI SCRIPT BREAKDOWN</span>
+        <h3 class="modal-title" id="preview-modal-title">Scene Outline & Narration</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closePreviewModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
-    <div id="modal-story-title" style="font-family:'Noto Sans Khmer',sans-serif; color:var(--gold); font-size:18px; margin-bottom:16px;" lang="km"></div>
-    <div class="preview-scene-list" id="preview-scene-list" role="list"></div>
-    <div style="margin-top:24px; display:flex; gap:10px;">
-      <button id="btn-modal-run" style="flex:1; padding:12px; background:linear-gradient(135deg,var(--gold),var(--purple)); border:none; border-radius:var(--r-sm); color:var(--bg-deep); font-weight:700; font-size:14px; cursor:pointer; font-family:'Outfit',sans-serif;">
-        Run Pipeline with This Story
+    <div class="modal-body" id="preview-modal-content">
+      <div class="loading-spinner-box">
+        <div class="studio-spinner"></div>
+        <p>Structuring story into scenes with Gemini...</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost-studio" onclick="closePreviewModal()">Close</button>
+      <button class="btn-gold-studio" onclick="confirmPreviewAndGenerate()">
+        Confirm & Start Video Production
       </button>
     </div>
   </div>
 </div>
 
-<!-- ── TOAST CONTAINER ──────────────────────────────────────── -->
-<div id="toast-container" aria-live="assertive" aria-label="Notifications"></div>
+<!-- ── PRICING & SUBSCRIPTION MODAL (FOR SAAS LAUNCH) ────────── -->
+<div id="pricing-modal" class="modal-backdrop hidden" onclick="closePricingModal(event)">
+  <div class="modal-dialog glass-panel pricing-modal-dialog" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <span class="modal-badge">MEMBERSHIP & MONETIZATION</span>
+        <h3 class="modal-title">Choose Your Creator Plan</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closePricingModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="pricing-cards-grid">
+        <!-- Free Starter -->
+        <div class="pricing-tier-card">
+          <div class="tier-head">
+            <h4 class="tier-name">Free Starter</h4>
+            <div class="tier-price">$0 <span>/ month</span></div>
+            <p class="tier-khr">0 ៛ / ខែ</p>
+          </div>
+          <ul class="tier-features">
+            <li>5 AI Khmer Story generations / mo</li>
+            <li>gTTS Voice Engine</li>
+            <li>Standard 720p Resolution</li>
+            <li>Watermark Included</li>
+          </ul>
+          <button class="btn-tier-select" onclick="selectPlan('free')">Current Plan</button>
+        </div>
 
-<!-- ── FOOTER ───────────────────────────────────────────────── -->
-<footer id="footer">
-  <p>
-    Built with ❤️ for Khmer storytelling ·
-    <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline" target="_blank" rel="noopener">
-      View on GitHub
-    </a>
-    · Powered by <a href="https://ai.google.dev" target="_blank" rel="noopener">Google Gemini</a>
-  </p>
-</footer>
+        <!-- Creator Pro -->
+        <div class="pricing-tier-card featured">
+          <div class="tier-popular-tag">MOST POPULAR</div>
+          <div class="tier-head">
+            <h4 class="tier-name">Creator Pro</h4>
+            <div class="tier-price">$19 <span>/ month</span></div>
+            <p class="tier-khr">75,000 ៛ / ខែ</p>
+          </div>
+          <ul class="tier-features">
+            <li>Unlimited AI Story Generations</li>
+            <li>Google WaveNet & ElevenLabs Khmer TTS</li>
+            <li>Gemini Imagen 3 Ultra Artwork</li>
+            <li>1080p HD Full 9:16 + 16:9 Exports</li>
+            <li>No Watermarks · Commercial License</li>
+            <li>Auto Social SEO & Caption Generator</li>
+          </ul>
+          <button class="btn-tier-select featured-btn" onclick="selectPlan('pro')">Get Pro Access</button>
+        </div>
 
+        <!-- Studio Enterprise -->
+        <div class="pricing-tier-card">
+          <div class="tier-head">
+            <h4 class="tier-name">Studio Agency</h4>
+            <div class="tier-price">$49 <span>/ month</span></div>
+            <p class="tier-khr">195,000 ៛ / ខែ</p>
+          </div>
+          <ul class="tier-features">
+            <li>Everything in Creator Pro</li>
+            <li>Batch Video Pipeline Generation</li>
+            <li>Cloudflare R2 Instant Video CDN</li>
+            <li>Custom Brand Logos & Intro/Outro</li>
+            <li>API Access for Direct Publishing</li>
+          </ul>
+          <button class="btn-tier-select" onclick="selectPlan('agency')">Contact Studio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST NOTIFICATIONS ───────────────────────────────────── -->
+<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Scripts -->
 <script src="app.js"></script>
 </body>
 </html>
