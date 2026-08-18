@@ -42,8 +42,8 @@ SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
 SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")
 
 # AI Model Identifiers (Google AI Studio)
-GEMINI_WRITER_MODEL = os.getenv("GEMINI_WRITER_MODEL", "gemini-1.5-flash")
-GEMINI_PUBLISHER_MODEL = os.getenv("GEMINI_PUBLISHER_MODEL", "gemini-1.5-flash")
+GEMINI_WRITER_MODEL = os.getenv("GEMINI_WRITER_MODEL", "gemini-2.5-flash")
+GEMINI_PUBLISHER_MODEL = os.getenv("GEMINI_PUBLISHER_MODEL", "gemini-2.5-flash")
 GEMINI_IMAGEN_MODEL = os.getenv("GEMINI_IMAGEN_MODEL", "imagen-3.0-generate-002")
 
 # TTS Settings
