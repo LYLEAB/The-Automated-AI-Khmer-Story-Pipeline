@@ -529,10 +529,25 @@ async def stream_video(job_id: str, profile: str):
 @app.get("/api/image/{job_id}/{scene_id}/{variant}")
 async def get_scene_image(job_id: str, scene_id: int, variant: str):
     """Return a scene image thumbnail (mobile or laptop variant)."""
-    img_path = Path("output") / job_id / "images" / f"scene_{scene_id}_{variant}.png"
+    img_dir = Path("output") / job_id / "images"
+    if not img_dir.exists():
+        img_dir = Path("output") / "images"
+
+    img_path = img_dir / f"scene_{scene_id}_{variant}.png"
     if not img_path.exists():
-        raise HTTPException(status_code=404, detail="Image not found")
-    return FileResponse(str(img_path), media_type="image/png")
+        img_path = img_dir / f"scene_{scene_id}.png"
+    if not img_path.exists():
+        all_imgs = list(img_dir.glob("*.png"))
+        if all_imgs:
+            img_path = all_imgs[0]
+        else:
+            raise HTTPException(status_code=404, detail="Image not found")
+
+    return FileResponse(
+        str(img_path),
+        media_type="image/png",
+        headers={"Access-Control-Allow-Origin": "*"},
+    )
 
 
 @app.get("/api/metadata/{job_id}")

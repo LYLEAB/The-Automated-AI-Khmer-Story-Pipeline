@@ -325,13 +325,18 @@ async function fetchCompletedJob(apiUrl, jobId) {
     const mobPlayer = $('video-player-mobile');
     const lapPlayer = $('video-player-laptop');
 
+    const mobPoster = `${apiUrl}/api/image/${jobId}/1/mobile`;
+    const lapPoster = `${apiUrl}/api/image/${jobId}/1/laptop`;
+
     if (mobPlayer) {
-      mobPlayer.src = mobileUrl;
+      mobPlayer.poster = mobPoster;
+      mobPlayer.innerHTML = `<source src="${mobileUrl}" type="video/mp4">`;
       mobPlayer.load();
       $('btn-dl-mobile').href = mobileUrl;
     }
     if (lapPlayer) {
-      lapPlayer.src = laptopUrl;
+      lapPlayer.poster = lapPoster;
+      lapPlayer.innerHTML = `<source src="${laptopUrl}" type="video/mp4">`;
       lapPlayer.load();
       $('btn-dl-laptop').href = laptopUrl;
     }
