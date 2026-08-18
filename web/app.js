@@ -27,8 +27,13 @@ function getApiUrl() {
   }
   const saved = localStorage.getItem('khmer_api_url');
   if (saved) return saved.replace(/\/$/, '');
-  // Injected at build time by Vercel env NEXT_PUBLIC_API_URL (or similar)
-  return window.KHMER_API_URL || 'http://localhost:8000';
+  if (window.KHMER_API_URL) return window.KHMER_API_URL.replace(/\/$/, '');
+
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (isLocal) {
+    return window.location.origin.includes(':') ? window.location.origin : 'http://localhost:8000';
+  }
+  return '';
 }
 
 // ─────────────────────────────────────────────
@@ -196,8 +201,12 @@ function validate() {
     return false;
   }
   const apiUrl = getApiUrl();
-  if (!apiUrl || apiUrl === 'http://localhost:8000') {
-    showToast('⚠️ Using local backend. Deploy api.py to Railway/Render and set the Backend API URL.', 'info');
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (!apiUrl && !isLocal) {
+    showToast('Please enter your Render Backend API URL in Advanced Settings.', 'error');
+    $('adv-details')?.setAttribute('open', '');
+    $('api-url-input')?.focus();
+    return false;
   }
   return true;
 }
@@ -324,7 +333,7 @@ function connectSSE(jobId) {
 // PROGRESS UI
 // ─────────────────────────────────────────────
 
-const STEP_ICONS = { 1: '✍️', 2: '🎙️', 3: '🎨', 4: '🎬', 5: '📢' };
+const STEP_ICONS = { 1: '️', 2: '️', 3: '', 4: '', 5: '' };
 
 function updateProgressBar(pct) {
   const bar = $('progress-bar');
@@ -343,19 +352,19 @@ function updateStepCard(step, status, message) {
   card.className = 'step-card';
   if (status === 'running') {
     card.classList.add('running');
-    statusEl.innerHTML = `<span class="spinner" aria-hidden="true">⏳</span> Running`;
+    statusEl.innerHTML = `<span class="spinner" aria-hidden="true"></span> Running`;
   } else if (status === 'done') {
     card.classList.add('done');
-    statusEl.textContent = '✅ Done';
+    statusEl.textContent = ' Done';
     // Mark all prior steps as done too
     for (let i = 1; i < step; i++) {
       $(`step-${i}`)?.classList.remove('running');
       $(`step-${i}`)?.classList.add('done');
-      if ($(`step-${i}-status`)) $(`step-${i}-status`).textContent = '✅ Done';
+      if ($(`step-${i}-status`)) $(`step-${i}-status`).textContent = ' Done';
     }
   } else if (status === 'failed') {
     card.classList.add('failed');
-    statusEl.textContent = '❌ Failed';
+    statusEl.textContent = ' Failed';
   }
 }
 
@@ -370,7 +379,7 @@ function addSceneCard(scene) {
   card.innerHTML = `
     ${scene.image_url
       ? `<img class="scene-card-img" src="${apiUrl}${scene.image_url}" alt="Scene ${scene.scene_id} image" loading="lazy" />`
-      : `<div class="scene-card-img placeholder" aria-hidden="true">🎨</div>`
+      : `<div class="scene-card-img placeholder" aria-hidden="true"></div>`
     }
     <div class="scene-card-body">
       <div class="scene-card-id">SCENE ${scene.scene_id}</div>
@@ -413,7 +422,7 @@ async function fetchJobAndShowOutputs(jobId) {
     }
 
     setGenerateButtonState('idle');
-    showToast('🎉 Your videos are ready!', 'success');
+    showToast(' Your videos are ready!', 'success');
 
   } catch (err) {
     setGenerateButtonState('idle');
@@ -525,13 +534,13 @@ async function handleCopyCaption() {
       await navigator.clipboard.writeText(`${titles}\n\n${desc}\n\n${hashtags}`);
     }
     btn.classList.add('copied');
-    btn.textContent = '✅ Caption Copied!';
+    btn.textContent = ' Caption Copied!';
     showToast('Full caption copied to clipboard!', 'success');
     setTimeout(() => {
       btn.classList.remove('copied');
       btn.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        📋 Copy Full Caption to Clipboard
+         Copy Full Caption to Clipboard
       `;
     }, 3000);
   } catch (err) {
@@ -551,7 +560,7 @@ async function handlePreviewStory() {
   }
 
   const btn = $('btn-preview-story');
-  btn.textContent = '⏳ Generating preview…';
+  btn.textContent = ' Generating preview…';
   btn.disabled = true;
 
   try {
@@ -578,7 +587,7 @@ async function handlePreviewStory() {
   } catch (err) {
     showToast(`Preview failed: ${err.message}`, 'error');
   } finally {
-    btn.textContent = '✨ Preview Story Scenes First';
+    btn.textContent = ' Preview Story Scenes First';
     btn.disabled = false;
   }
 }
@@ -674,10 +683,10 @@ function setGenerateButtonState(state) {
   if (!btn) return;
   if (state === 'loading') {
     btn.disabled = true;
-    btn.innerHTML = '<div class="btn-shine" aria-hidden="true"></div><span class="spinner" aria-hidden="true">⏳</span> Pipeline Running…';
+    btn.innerHTML = '<div class="btn-shine" aria-hidden="true"></div><span class="spinner" aria-hidden="true"></span> Pipeline Running…';
   } else {
     btn.disabled = false;
-    btn.innerHTML = '<div class="btn-shine" aria-hidden="true"></div>🎬 Generate Video';
+    btn.innerHTML = '<div class="btn-shine" aria-hidden="true"></div> Generate Video';
   }
 }
 
@@ -691,7 +700,7 @@ function showToast(message, type = 'info') {
 
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  const icons = { success: '', error: '', info: 'ℹ️' };
   toast.innerHTML = `<span aria-hidden="true">${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
   toast.setAttribute('role', 'alert');
 
