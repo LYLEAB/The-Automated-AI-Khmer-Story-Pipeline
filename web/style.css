@@ -726,3 +726,37 @@ video {
 }
 
 .hidden { display: none !important; }
+
+/* Timing HUD */
+.timing-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.timing-chip {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timing-chip strong {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+}
+
+.timing-chip.highlight {
+  border-color: var(--border-focus);
+  background: var(--gold-dim);
+}
+
+.timing-chip.highlight strong {
+  color: var(--gold-light);
+}

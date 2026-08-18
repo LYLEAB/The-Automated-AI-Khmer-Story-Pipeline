@@ -1,3 +1,47 @@
+
+let timerInterval = null;
+let startTime = null;
+let estimatedTotalSeconds = 60;
+
+function startTimer(numScenes) {
+  stopTimer();
+  startTime = Date.now();
+  // Roughly 10-12s per scene for writing + TTS + Imagen + MoviePy render
+  estimatedTotalSeconds = Math.max(30, numScenes * 12);
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60).toString().padStart(2, '0');
+  const s = (sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function updateTimerDisplay() {
+  if (!startTime) return;
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const remaining = Math.max(0, estimatedTotalSeconds - elapsed);
+
+  const elElapsed = $('time-elapsed');
+  const elRemaining = $('time-remaining');
+
+  if (elElapsed) elElapsed.textContent = formatTime(elapsed);
+  if (elRemaining) {
+    elRemaining.textContent = remaining > 0 ? `~${formatTime(remaining)}` : 'Almost ready...';
+  }
+}
+
 /**
  * app.js — Clean & Responsive KhmerAI Studio Controller
  */
@@ -139,6 +183,7 @@ async function handleGenerate() {
   $('progress-view')?.scrollIntoView({ behavior: 'smooth' });
 
   updateProgress(0, 'Starting pipeline...', 'running', 1);
+  startTimer(numScenes);
 
   try {
     const res = await fetch(`${apiUrl}/api/run`, {
@@ -167,6 +212,7 @@ async function handleGenerate() {
     listenToSseProgress(apiUrl, currentJobId);
   } catch (err) {
     showToast(`${err.message}`);
+    stopTimer();
     updateProgress(0, err.message, 'failed', 1);
   }
 }
@@ -185,6 +231,7 @@ function listenToSseProgress(apiUrl, jobId) {
       if (progress_pct >= 100 || status === 'done') {
         currentEventSource.close();
         showToast('Video ready!');
+        stopTimer();
         fetchCompletedJob(apiUrl, jobId);
       } else if (status === 'failed') {
         currentEventSource.close();
@@ -207,6 +254,7 @@ async function pollJobStatus(apiUrl, jobId) {
     if (curr) {
       updateProgress(curr.progress_pct, curr.message || '', curr.status, curr.step || 1);
       if (curr.status === 'done') {
+        stopTimer();
         fetchCompletedJob(apiUrl, jobId);
       }
     }
