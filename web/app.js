@@ -307,17 +307,32 @@ function updateProgress(pct, msg, status, step) {
 
 async function fetchCompletedJob(apiUrl, jobId) {
   try {
-    const res = await fetch(`${apiUrl}/api/jobs`);
+    const res = await fetch(`${apiUrl}/api/job/${jobId}`);
     if (!res.ok) return;
-    const jobs = await res.json();
-    const job = jobs.find(j => j.id === jobId) || jobs[0];
+    const job = await res.json();
     if (!job) return;
 
     $('progress-view')?.classList.add('hidden');
     $('results-view')?.classList.remove('hidden');
     $('results-view')?.scrollIntoView({ behavior: 'smooth' });
 
-    $('out-story-title').textContent = job.story_title || 'Khmer Story Video';
+    $('out-story-title').textContent = job.story_title || job.outputs?.story_title || 'Khmer Story Video';
+
+    const profile = job.config?.export_profile || 'both';
+    const mobBox = $('box-mobile');
+    const lapBox = $('box-laptop');
+
+    if (profile === 'laptop') {
+      mobBox?.classList.add('hidden');
+    } else {
+      mobBox?.classList.remove('hidden');
+    }
+
+    if (profile === 'mobile') {
+      lapBox?.classList.add('hidden');
+    } else {
+      lapBox?.classList.remove('hidden');
+    }
 
     const mobileUrl = `${apiUrl}/api/video/${jobId}/mobile`;
     const laptopUrl = `${apiUrl}/api/video/${jobId}/laptop`;
@@ -328,18 +343,21 @@ async function fetchCompletedJob(apiUrl, jobId) {
     const mobPoster = `${apiUrl}/api/image/${jobId}/1/mobile`;
     const lapPoster = `${apiUrl}/api/image/${jobId}/1/laptop`;
 
-    if (mobPlayer) {
+    if (mobPlayer && profile !== 'laptop') {
       mobPlayer.poster = mobPoster;
       mobPlayer.innerHTML = `<source src="${mobileUrl}" type="video/mp4">`;
       mobPlayer.load();
-      $('btn-dl-mobile').href = mobileUrl;
     }
-    if (lapPlayer) {
+    if (lapPlayer && profile !== 'mobile') {
       lapPlayer.poster = lapPoster;
       lapPlayer.innerHTML = `<source src="${laptopUrl}" type="video/mp4">`;
       lapPlayer.load();
-      $('btn-dl-laptop').href = laptopUrl;
     }
+
+    const dlMob = $('btn-dl-mobile');
+    const dlLap = $('btn-dl-laptop');
+    if (dlMob) dlMob.href = mobileUrl;
+    if (dlLap) dlLap.href = laptopUrl;
 
     try {
       const metaRes = await fetch(`${apiUrl}/api/metadata/${jobId}`);
