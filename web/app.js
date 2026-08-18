@@ -216,51 +216,77 @@ async function handleGenerate() {
     updateProgress(0, err.message, 'failed', 1);
   }
 }
+let pollInterval = null;
+
 function listenToSseProgress(apiUrl, jobId) {
-  if (currentEventSource) currentEventSource.close();
+  if (currentEventSource) {
+    try { currentEventSource.close(); } catch(e) {}
+  }
+  stopPolling();
+
   const sseUrl = `${apiUrl}/api/progress/${jobId}`;
-  currentEventSource = new EventSource(sseUrl);
+  try {
+    currentEventSource = new EventSource(sseUrl);
 
-  currentEventSource.onmessage = (event) => {
-    if (!event.data) return;
-    try {
-      const data = JSON.parse(event.data);
-      const { step, progress_pct, message, status } = data;
-      updateProgress(progress_pct, message, status, step);
+    currentEventSource.onmessage = (event) => {
+      if (!event.data) return;
+      try {
+        const data = JSON.parse(event.data);
+        handleProgressEvent(apiUrl, jobId, data);
+      } catch (e) {}
+    };
 
-      if (progress_pct >= 100 || status === 'done') {
-        currentEventSource.close();
-        showToast('Video ready!');
-        stopTimer();
-        fetchCompletedJob(apiUrl, jobId);
-      } else if (status === 'failed') {
-        currentEventSource.close();
-        showToast(`Failed: ${message}`);
-      }
-    } catch (e) {}
-  };
+    currentEventSource.onerror = () => {
+      // If SSE proxy disconnects, polling automatically continues
+    };
+  } catch(e) {}
 
-  currentEventSource.onerror = () => {
+  // Active polling fallback every 1.5s ensures progress never freezes
+  pollInterval = setInterval(() => {
     pollJobStatus(apiUrl, jobId);
-  };
+  }, 1500);
+}
+
+function handleProgressEvent(apiUrl, jobId, data) {
+  const { step, progress_pct, message, status } = data;
+  updateProgress(progress_pct, message, status, step);
+
+  if (progress_pct >= 100 || status === 'done') {
+    if (currentEventSource) currentEventSource.close();
+    stopPolling();
+    stopTimer();
+    showToast('Video ready!');
+    fetchCompletedJob(apiUrl, jobId);
+  } else if (status === 'failed') {
+    if (currentEventSource) currentEventSource.close();
+    stopPolling();
+    stopTimer();
+    showToast(`Pipeline failed: ${message}`);
+  }
+}
+
+function stopPolling() {
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
+  }
 }
 
 async function pollJobStatus(apiUrl, jobId) {
   try {
-    const res = await fetch(`${apiUrl}/api/jobs`);
+    const res = await fetch(`${apiUrl}/api/job/${jobId}`);
     if (!res.ok) return;
-    const jobs = await res.json();
-    const curr = jobs.find(j => j.id === jobId);
-    if (curr) {
-      updateProgress(curr.progress_pct, curr.message || '', curr.status, curr.step || 1);
-      if (curr.status === 'done') {
-        stopTimer();
-        fetchCompletedJob(apiUrl, jobId);
-      }
+    const job = await res.json();
+    if (job) {
+      handleProgressEvent(apiUrl, jobId, {
+        step: job.step || 1,
+        progress_pct: job.progress_pct || 5,
+        message: job.message || 'Processing...',
+        status: job.status || 'running'
+      });
     }
   } catch (e) {}
 }
-
 function updateProgress(pct, msg, status, step) {
   $('progress-pct-val').textContent = `${pct}%`;
   $('progress-bar-fill').style.width = `${pct}%`;
