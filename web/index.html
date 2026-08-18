@@ -2,627 +2,267 @@
 <html lang="km" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KhmerAI Studio — Automated AI Khmer Story & Video Pipeline</title>
-  <meta name="description" content="Production-grade AI platform that turns story prompts into cinematic Khmer videos for TikTok, Facebook Reels, and YouTube." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>KhmerAI Studio — Automated Video Generator</title>
+  <meta name="description" content="Generate cinematic Khmer story videos for TikTok, Reels, and YouTube with AI narration and subtitles." />
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Khmer:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Khmer:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-<!-- ── TOP NAVBAR ───────────────────────────────────────────── -->
-<header id="top-navbar" role="banner">
-  <div class="nav-container">
-    <div class="nav-brand">
-      <div class="brand-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<!-- ── HEADER ────────────────────────────────────────────────── -->
+<header id="header">
+  <div class="nav-wrapper">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
         </svg>
       </div>
-      <div class="brand-text">
-        <span class="brand-title">KhmerAI<span class="brand-badge">STUDIO</span></span>
-        <span class="brand-sub">Production Video Pipeline</span>
+      <div class="brand-info">
+        <span class="brand-name">KhmerAI <span class="brand-tag">Studio</span></span>
       </div>
     </div>
 
-    <nav class="nav-menu" aria-label="Main Navigation">
-      <button class="nav-item active" id="nav-btn-studio" onclick="switchMainView('studio')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-        Video Studio
-      </button>
-      <button class="nav-item" id="nav-btn-gallery" onclick="switchMainView('gallery')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        Projects
-      </button>
-      <button class="nav-item" id="nav-btn-pricing" onclick="openPricingModal()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        Plans & Pricing
-      </button>
-      <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline" target="_blank" rel="noopener" class="nav-item nav-link-external">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </a>
-    </nav>
-
-    <div class="nav-actions">
-      <div class="system-status-pill" id="system-status-pill">
-        <span class="status-dot"></span>
-        <span class="status-label">Cloud Pipeline Live</span>
+    <div class="nav-right">
+      <div class="status-indicator" title="System Online">
+        <span class="pulse-dot"></span>
+        <span class="status-text">Cloud Engine</span>
       </div>
-      <button class="btn-tier-badge" onclick="openPricingModal()">
-        <span class="tier-tag">PRO</span>
-        <span class="tier-action">Upgrade</span>
+      <button class="nav-btn-icon" onclick="toggleProjectsModal()" title="Past Projects">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       </button>
+      <a href="https://github.com/LYLEAB/The-Automated-AI-Khmer-Story-Pipeline" target="_blank" rel="noopener" class="nav-btn-icon" title="GitHub Repository">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      </a>
     </div>
   </div>
 </header>
 
-<!-- ── HERO HEADER ───────────────────────────────────────────── -->
-<section id="hero-banner">
-  <div class="hero-content">
-    <div class="hero-tag">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
-      <span>Next-Gen Khmer Content Engine</span>
-    </div>
-    <h1 class="hero-heading">Create Viral Khmer Videos With AI</h1>
-    <p class="hero-khmer" lang="km">ប្រព័ន្ធស្វ័យប្រវត្តផលិតវីដេអូ AI ភាសាខ្មែរ កម្រិតភាពយន្ត សម្រាប់ TikTok, Facebook Reels និង YouTube</p>
-  </div>
-</section>
+<!-- ── MAIN CONTENT CONTAINER ────────────────────────────────── -->
+<main class="container">
 
-<!-- ── MAIN STUDIO APP ───────────────────────────────────────── -->
-<main id="app-viewport">
-  <div class="studio-layout" id="studio-view-container">
-
-    <!-- ── LEFT: SCRIPT & STORY SUITE ── -->
-    <div class="studio-col script-col">
-      <div class="studio-card glass-panel">
-        <div class="card-header">
-          <div class="header-left">
-            <span class="step-num">01</span>
-            <div>
-              <h2 class="card-title">Story Engine</h2>
-              <p class="card-desc">Scriptwriting & Scene Structuring</p>
-            </div>
-          </div>
-          <div class="header-right">
-            <button class="btn-ghost-sm" id="btn-surprise" onclick="handleSurpriseMe()" title="Generate viral story concept">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-              Surprise Me
-            </button>
-          </div>
-        </div>
-
-        <!-- Mode Selectors -->
-        <div class="mode-bar" role="tablist">
-          <button class="mode-btn active" id="tab-ai" role="tab" onclick="switchMode('ai_generate')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            AI Generator
-          </button>
-          <button class="mode-btn" id="tab-paste" role="tab" onclick="switchMode('paste_story')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Custom Script
-          </button>
-          <button class="mode-btn" id="tab-templates" role="tab" onclick="toggleTemplateDrawer()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            Templates
-          </button>
-        </div>
-
-        <!-- Template Selector Drawer -->
-        <div id="template-drawer" class="template-drawer hidden">
-          <p class="drawer-heading">Select Viral Genre Preset</p>
-          <div class="template-grid">
-            <div class="tpl-chip" onclick="applyTemplate('legend')">
-              <span class="tpl-title">រឿងព្រេងបុរាណ</span>
-              <span class="tpl-sub">Ancient Khmer Legend</span>
-            </div>
-            <div class="tpl-chip" onclick="applyTemplate('cyberpunk')">
-              <span class="tpl-title">ភ្នំពេញ ២១៥០</span>
-              <span class="tpl-sub">Cyberpunk Phnom Penh</span>
-            </div>
-            <div class="tpl-chip" onclick="applyTemplate('ghost')">
-              <span class="tpl-title">រឿងខ្មោចព្រាយ</span>
-              <span class="tpl-sub">Midnight Angkor Mystery</span>
-            </div>
-            <div class="tpl-chip" onclick="applyTemplate('romance')">
-              <span class="tpl-title">ស្នេហាកុលាបប៉ៃលិន</span>
-              <span class="tpl-sub">Romantic Drama</span>
-            </div>
-            <div class="tpl-chip" onclick="applyTemplate('bokator')">
-              <span class="tpl-title">ក្បាច់គុនល្បុក្កតោ</span>
-              <span class="tpl-sub">Bokator Martial Warrior</span>
-            </div>
-            <div class="tpl-chip" onclick="applyTemplate('fable')">
-              <span class="tpl-title">រឿងនិទានកំប្លែង</span>
-              <span class="tpl-sub">Moral Comedy Fable</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Input Fields -->
-        <div class="input-container">
-          <!-- AI Prompt Area -->
-          <div id="pane-ai" class="input-pane active">
-            <label class="field-label" for="story-prompt">Describe your story concept or topic</label>
-            <div class="textarea-wrapper">
-              <textarea
-                id="story-prompt"
-                class="studio-textarea"
-                rows="4"
-                placeholder="e.g. រឿងកុលាបប៉ៃលិន — a touching story about love, loyalty, and redemption in the emerald hills of Pailin..."
-              ></textarea>
-              <div class="char-count" id="prompt-char-count">0 chars</div>
-            </div>
-          </div>
-
-          <!-- Paste Story Area -->
-          <div id="pane-paste" class="input-pane hidden">
-            <label class="field-label" for="story-text">Paste your complete Khmer or English script</label>
-            <div class="textarea-wrapper">
-              <textarea
-                id="story-text"
-                class="studio-textarea"
-                rows="5"
-                placeholder="ដាក់ស្នៀតរឿងរ៉ាវរបស់អ្នកនៅទីនេះ… Gemini will analyze the text and divide it into synchronized cinematic scenes automatically."
-              ></textarea>
-              <div class="char-count" id="text-char-count">0 chars</div>
-            </div>
-          </div>
-
-          <!-- Mood / Style Tags -->
-          <div class="section-block">
-            <label class="field-label">Narrative Mood & Tone</label>
-            <div class="tag-selector" role="group" aria-label="Story Tone">
-              <button class="mood-tag active" data-style="dramatic" onclick="selectStyle('dramatic')">Dramatic</button>
-              <button class="mood-tag" data-style="heroic" onclick="selectStyle('heroic')">Heroic / Epic</button>
-              <button class="mood-tag" data-style="mysterious" onclick="selectStyle('mysterious')">Mysterious</button>
-              <button class="mood-tag" data-style="romantic" onclick="selectStyle('romantic')">Romantic</button>
-              <button class="mood-tag" data-style="peaceful" onclick="selectStyle('peaceful')">Peaceful</button>
-              <button class="mood-tag" data-style="melancholic" onclick="selectStyle('melancholic')">Melancholic</button>
-            </div>
-          </div>
-
-          <!-- Preview Script Trigger -->
-          <div class="preview-action-row">
-            <button class="btn-outline-studio" id="btn-preview-scenes" onclick="handlePreviewScenes()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span>Preview AI Scene Breakdown</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── RIGHT: CINEMATIC ENGINE CONFIGURATION ── -->
-    <div class="studio-col config-col">
-      <div class="studio-card glass-panel">
-        <div class="card-header">
-          <div class="header-left">
-            <span class="step-num">02</span>
-            <div>
-              <h2 class="card-title">Production Settings</h2>
-              <p class="card-desc">Visuals, Audio, and Video Formats</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="config-grid">
-          <!-- Scene Slider -->
-          <div class="config-item span-full">
-            <div class="slider-header">
-              <label class="field-label" for="num-scenes">Story Scene Count</label>
-              <div class="slider-badge"><span id="num-scenes-val">6</span> Scenes (~60s)</div>
-            </div>
-            <input
-              type="range"
-              id="num-scenes"
-              class="studio-slider"
-              min="3"
-              max="12"
-              step="1"
-              value="6"
-              oninput="handleSceneSliderChange(this.value)"
-            />
-            <div class="slider-markers">
-              <span>3 (Short ~30s)</span>
-              <span>6 (Standard ~60s)</span>
-              <span>12 (Epic ~120s)</span>
-            </div>
-          </div>
-
-          <!-- Video Format Selector -->
-          <div class="config-item">
-            <label class="field-label" for="export-profile">Video Export Matrix</label>
-            <div class="select-wrapper">
-              <select id="export-profile" class="studio-select">
-                <option value="both" selected>Dual Export (9:16 + 16:9)</option>
-                <option value="mobile">Mobile 9:16 (TikTok & Reels)</option>
-                <option value="laptop">Landscape 16:9 (YouTube & FB)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Khmer Voice Provider -->
-          <div class="config-item">
-            <label class="field-label" for="tts-provider">Khmer Voice Engine</label>
-            <div class="select-wrapper">
-              <select id="tts-provider" class="studio-select">
-                <option value="gtts" selected>gTTS (Free Tier · Khmer)</option>
-                <option value="google_tts">Google WaveNet (km-KH Studio)</option>
-                <option value="elevenlabs">ElevenLabs Multilingual</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Visual Art Style -->
-          <div class="config-item">
-            <label class="field-label" for="image-provider">AI Art Engine</label>
-            <div class="select-wrapper">
-              <select id="image-provider" class="studio-select">
-                <option value="gemini_imagen" selected>Gemini Imagen 3 (Cinematic)</option>
-                <option value="stability_ai">Stability AI (SDXL Studio)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Motion & Camera -->
-          <div class="config-item">
-            <label class="field-label" for="motion-profile">Camera Motion FX</label>
-            <div class="select-wrapper">
-              <select id="motion-profile" class="studio-select">
-                <option value="dynamic" selected>Dynamic Ken Burns (Cinematic)</option>
-                <option value="zoom_in">Slow Zoom-In (Focus)</option>
-                <option value="pan_left">Dramatic Pan Left</option>
-                <option value="static">Static Frame (Classic)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Subtitle Style & Backdrop -->
-          <div class="config-item span-full">
-            <div class="subtitle-config-row">
-              <div class="check-group">
-                <input type="checkbox" id="subtitles-enabled" class="studio-check" checked />
-                <label for="subtitles-enabled" class="check-label">Burn-In Khmer Unicode Subtitles (Noto Sans)</label>
-              </div>
-              <div class="check-group">
-                <input type="checkbox" id="bg-music-enabled" class="studio-check" checked />
-                <label for="bg-music-enabled" class="check-label">Background Ambient Mix</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Advanced Production Settings Accordion -->
-          <div class="config-item span-full">
-            <details class="advanced-details" id="adv-details">
-              <summary class="adv-summary">
-                <span>Advanced Production & Cloud Endpoint</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="adv-body">
-                <label class="field-label" for="api-url-input">Production Backend API URL</label>
-                <input
-                  type="url"
-                  id="api-url-input"
-                  class="studio-input"
-                  placeholder="https://your-backend.onrender.com (Auto-resolved on localhost)"
-                />
-                <p class="field-hint">Leave blank when running unified or enter your live Render/Railway service URL.</p>
-              </div>
-            </details>
-          </div>
-        </div>
-
-        <!-- GENERATE CTA -->
-        <div class="action-footer">
-          <button class="btn-generate-hero" id="btn-generate" onclick="handleGenerate()">
-            <div class="btn-glow"></div>
-            <div class="btn-inner">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span class="btn-label">Generate Cinematic Video</span>
-            </div>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── PROGRESS & TELEMETRY DASHBOARD ───────────────────────── -->
-  <section id="progress-view" class="progress-section hidden">
-    <div class="studio-card glass-panel progress-card">
-      <div class="progress-header">
-        <div>
-          <span class="pulse-indicator"></span>
-          <h3 class="progress-title" id="progress-status-text">Pipeline Active</h3>
-          <p class="progress-sub" id="progress-msg">Initializing AI components…</p>
-        </div>
-        <div class="progress-pct-display">
-          <span id="progress-pct-val">0</span><span class="unit">%</span>
-        </div>
-      </div>
-
-      <!-- Main Neon Progress Bar -->
-      <div class="neon-progress-track">
-        <div class="neon-progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
-      </div>
-
-      <!-- 5-Stage Stepper Nodes -->
-      <div class="pipeline-stepper">
-        <div class="step-node" id="node-step-1">
-          <div class="node-icon">01</div>
-          <span class="node-name">Script</span>
-          <span class="node-state" id="state-step-1">Waiting</span>
-        </div>
-        <div class="step-connector" id="conn-1-2"></div>
-        <div class="step-node" id="node-step-2">
-          <div class="node-icon">02</div>
-          <span class="node-name">Voice TTS</span>
-          <span class="node-state" id="state-step-2">Waiting</span>
-        </div>
-        <div class="step-connector" id="conn-2-3"></div>
-        <div class="step-node" id="node-step-3">
-          <div class="node-icon">03</div>
-          <span class="node-name">AI Visuals</span>
-          <span class="node-state" id="state-step-3">Waiting</span>
-        </div>
-        <div class="step-connector" id="conn-3-4"></div>
-        <div class="step-node" id="node-step-4">
-          <div class="node-icon">04</div>
-          <span class="node-name">Rendering</span>
-          <span class="node-state" id="state-step-4">Waiting</span>
-        </div>
-        <div class="step-connector" id="conn-4-5"></div>
-        <div class="step-node" id="node-step-5">
-          <div class="node-icon">05</div>
-          <span class="node-name">SEO Publish</span>
-          <span class="node-state" id="state-step-5">Waiting</span>
-        </div>
-      </div>
-
-      <!-- Live Terminal Console Output -->
-      <div class="terminal-box">
-        <div class="terminal-header">
-          <span class="term-dot red"></span>
-          <span class="term-dot yellow"></span>
-          <span class="term-dot green"></span>
-          <span class="term-title">System Stream Telemetry</span>
-        </div>
-        <div class="terminal-logs" id="terminal-logs">
-          <div class="log-line">[SYS] Pipeline initialized. Listening for real-time SSE stream events...</div>
-        </div>
-      </div>
-    </div>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <h1 class="hero-title">Automated Khmer AI Video Studio</h1>
+    <p class="hero-khmer" lang="km">បង្កើតវីដេអូរឿងខ្មែរស្វ័យប្រវត្ត ជាមួយសំឡេងអាន និងរូបភាព AI កម្រិតច្បាស់ HD</p>
   </section>
 
-  <!-- ── OUTPUT & DELIVERY THEATER ────────────────────────────── -->
-  <section id="results-view" class="results-section hidden">
-    <div class="results-container">
-      
-      <!-- Result Banner -->
-      <div class="results-header glass-panel">
-        <div class="res-title-col">
-          <span class="success-badge">RENDER COMPLETE</span>
-          <h2 class="res-story-title" id="out-story-title">រឿងកុលាបប៉ៃលិន</h2>
-          <p class="res-story-sub" id="out-story-sub">The Rose of Pailin · 6 Scenes · High Definition</p>
-        </div>
-        <div class="res-actions">
-          <button class="btn-ghost-studio" onclick="handleReset()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            Create Another Video
-          </button>
-        </div>
-      </div>
+  <!-- STUDIO WORKSPACE -->
+  <div class="studio-grid" id="studio-grid">
 
-      <div class="theater-grid">
-        <!-- Vertical 9:16 Video Player -->
-        <div class="theater-card glass-panel" id="card-mobile-player">
-          <div class="player-header">
-            <div class="player-tag">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-              <span>Mobile 9:16 (TikTok / Reels / Shorts)</span>
-            </div>
-            <a id="btn-dl-mobile" class="btn-dl-badge" href="#" download>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download MP4
-            </a>
-          </div>
-          <div class="mockup-phone">
-            <video id="video-player-mobile" controls playsinline class="cinema-video"></video>
-          </div>
-        </div>
-
-        <!-- Landscape 16:9 Video Player -->
-        <div class="theater-card glass-panel" id="card-laptop-player">
-          <div class="player-header">
-            <div class="player-tag">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-              <span>Landscape 16:9 (YouTube / Facebook)</span>
-            </div>
-            <a id="btn-dl-laptop" class="btn-dl-badge" href="#" download>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download MP4
-            </a>
-          </div>
-          <div class="mockup-widescreen">
-            <video id="video-player-laptop" controls playsinline class="cinema-video"></video>
-          </div>
-        </div>
-      </div>
-
-      <!-- Social Media SEO & Metadata Toolkit -->
-      <div class="metadata-suite glass-panel">
-        <div class="meta-header">
-          <h3 class="meta-title">Social Media SEO & Publishing Suite</h3>
-          <p class="meta-desc">Bilingual titles, viral captions, and hashtags optimized for social algorithms.</p>
-        </div>
-
-        <div class="meta-grid">
-          <!-- Title Variants -->
-          <div class="meta-card">
-            <div class="meta-card-header">
-              <span class="meta-tag">Viral Title Variants</span>
-              <button class="btn-copy-sm" onclick="copyText('out-titles-box')">Copy All</button>
-            </div>
-            <div class="meta-box" id="out-titles-box">
-              <p class="meta-line">1. ដំណើររឿងកុលាបប៉ៃលិនដ៏អស្ចារ្យ</p>
-              <p class="meta-line">2. The Legendary Tale of Pailin | Khmer AI Cinema</p>
-            </div>
-          </div>
-
-          <!-- Hashtags -->
-          <div class="meta-card">
-            <div class="meta-card-header">
-              <span class="meta-tag">Recommended Hashtags</span>
-              <button class="btn-copy-sm" onclick="copyText('out-hashtags-box')">Copy Tags</button>
-            </div>
-            <div class="meta-box hashtag-box" id="out-hashtags-box">
-              #KhmerStory #រឿងខ្មែរ #KhmerAI #AngkorLegend #TikTokCambodia #CambodiaCinema
-            </div>
-          </div>
-
-          <!-- Full Post Caption -->
-          <div class="meta-card span-full">
-            <div class="meta-card-header">
-              <span class="meta-tag">Ready-to-Post Caption</span>
-              <button class="btn-copy-main" onclick="copyText('out-caption-box')">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copy Caption & Hashtags
-              </button>
-            </div>
-            <textarea id="out-caption-box" class="caption-textarea" rows="4" readonly></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── PROJECT GALLERY & RECENT JOBS ────────────────────────── -->
-  <section id="gallery-view" class="gallery-section hidden">
-    <div class="gallery-container">
-      <div class="gallery-header">
-        <div>
-          <h2 class="section-title">Your Studio Projects</h2>
-          <p class="section-sub">Previously generated stories and video archives</p>
-        </div>
-        <button class="btn-outline-studio" onclick="fetchRecentJobs()">
+    <!-- LEFT: STORY & SCRIPT -->
+    <div class="card panel-story">
+      <div class="card-top">
+        <span class="card-label">Story & Script</span>
+        <button class="btn-surprise" id="btn-surprise" onclick="handleSurpriseMe()" title="Generate Idea">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-          Refresh History
+          Surprise Idea
         </button>
       </div>
 
-      <div class="project-grid" id="project-history-grid">
-        <div class="empty-state">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
-          <p>No previous projects found. Generate your first video!</p>
+      <!-- Mode Switcher -->
+      <div class="mode-tabs">
+        <button class="tab-btn active" id="tab-ai" onclick="switchMode('ai_generate')">AI Generator</button>
+        <button class="tab-btn" id="tab-paste" onclick="switchMode('paste_story')">Paste Script</button>
+      </div>
+
+      <!-- AI Prompt Pane -->
+      <div id="pane-ai" class="input-pane">
+        <textarea
+          id="story-prompt"
+          class="story-input"
+          placeholder="Enter a story concept or topic in Khmer or English (e.g. រឿងកុលាបប៉ៃលិន, Ancient Angkor Legend, Apsara Dancer)..."
+        ></textarea>
+      </div>
+
+      <!-- Paste Story Pane -->
+      <div id="pane-paste" class="input-pane hidden">
+        <textarea
+          id="story-text"
+          class="story-input"
+          placeholder="Paste your full Khmer or English story text here. The AI will structure it into synchronized scenes automatically."
+        ></textarea>
+      </div>
+
+      <!-- Mood Chips -->
+      <div class="mood-section">
+        <span class="sub-label">Mood & Style:</span>
+        <div class="mood-chips">
+          <button class="chip active" data-style="dramatic" onclick="selectStyle('dramatic')">Dramatic</button>
+          <button class="chip" data-style="heroic" onclick="selectStyle('heroic')">Heroic</button>
+          <button class="chip" data-style="mystery" onclick="selectStyle('mystery')">Mystery</button>
+          <button class="chip" data-style="romance" onclick="selectStyle('romance')">Romance</button>
+          <button class="chip" data-style="comedy" onclick="selectStyle('comedy')">Comedy</button>
         </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: VIDEO SETTINGS -->
+    <div class="card panel-settings">
+      <div class="card-top">
+        <span class="card-label">Video Settings</span>
+      </div>
+
+      <!-- Scene Count -->
+      <div class="setting-row">
+        <div class="setting-header">
+          <label class="setting-title" for="num-scenes">Length / Scenes</label>
+          <span class="setting-badge" id="num-scenes-val">6 Scenes (~60s)</span>
+        </div>
+        <input
+          type="range"
+          id="num-scenes"
+          class="range-slider"
+          min="3"
+          max="12"
+          step="1"
+          value="6"
+          oninput="handleSceneSliderChange(this.value)"
+        />
+      </div>
+
+      <!-- Format Matrix -->
+      <div class="setting-row">
+        <label class="setting-title" for="export-profile">Export Format</label>
+        <select id="export-profile" class="custom-select">
+          <option value="both" selected>Dual Export (9:16 Mobile + 16:9 Landscape)</option>
+          <option value="mobile">Mobile 9:16 (TikTok & Reels)</option>
+          <option value="laptop">Landscape 16:9 (YouTube & Facebook)</option>
+        </select>
+      </div>
+
+      <!-- Khmer Voice -->
+      <div class="setting-row">
+        <label class="setting-title" for="tts-provider">Khmer Voice</label>
+        <select id="tts-provider" class="custom-select">
+          <option value="gtts" selected>gTTS (Khmer Voice Engine)</option>
+          <option value="google_tts">Google WaveNet (km-KH Studio)</option>
+          <option value="elevenlabs">ElevenLabs Multilingual</option>
+        </select>
+      </div>
+
+      <!-- Subtitle Toggle -->
+      <div class="setting-row check-row">
+        <label class="check-container">
+          <input type="checkbox" id="subtitles-enabled" checked />
+          <span class="check-text">Burn-in Khmer Unicode Subtitles</span>
+        </label>
+      </div>
+
+      <!-- Advanced Connection (Collapsible) -->
+      <details class="adv-collapse">
+        <summary>Advanced Backend URL</summary>
+        <input
+          type="url"
+          id="api-url-input"
+          class="custom-input"
+          placeholder="https://your-backend.onrender.com"
+        />
+      </details>
+
+      <!-- Generate Button -->
+      <div class="action-wrap">
+        <button class="btn-create" id="btn-generate" onclick="handleGenerate()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Generate Video</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROGRESS HUD ─────────────────────────────────────────── -->
+  <section id="progress-view" class="card progress-panel hidden">
+    <div class="progress-info">
+      <div>
+        <h3 class="progress-heading" id="progress-status-text">Creating Video...</h3>
+        <p class="progress-detail" id="progress-msg">Initializing AI models</p>
+      </div>
+      <div class="progress-pct" id="progress-pct-val">0%</div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-track">
+      <div class="progress-bar" id="progress-bar-fill"></div>
+    </div>
+
+    <!-- 5 Clean Stepper Steps -->
+    <div class="stepper">
+      <div class="step" id="step-1"><span>1</span> Script</div>
+      <div class="step" id="step-2"><span>2</span> Voice</div>
+      <div class="step" id="step-3"><span>3</span> Visuals</div>
+      <div class="step" id="step-4"><span>4</span> Render</div>
+      <div class="step" id="step-5"><span>5</span> Ready</div>
+    </div>
+  </section>
+
+  <!-- ── VIDEO RESULT & DOWNLOAD THEATER ──────────────────────── -->
+  <section id="results-view" class="results-layout hidden">
+    <div class="card result-card">
+      <div class="result-top">
+        <div>
+          <span class="badge-success">COMPLETE</span>
+          <h2 class="result-title" id="out-story-title">រឿងកុលាបប៉ៃលិន</h2>
+        </div>
+        <button class="btn-new" onclick="handleReset()">+ Create New</button>
+      </div>
+
+      <!-- Video Players Grid -->
+      <div class="video-grid">
+        <!-- 9:16 Mobile Player -->
+        <div class="player-box" id="box-mobile">
+          <div class="player-label">
+            <span>Mobile 9:16 (TikTok & Reels)</span>
+            <a id="btn-dl-mobile" class="btn-download" href="#" download>Download MP4</a>
+          </div>
+          <div class="video-frame phone-frame">
+            <video id="video-player-mobile" controls playsinline></video>
+          </div>
+        </div>
+
+        <!-- 16:9 Landscape Player -->
+        <div class="player-box" id="box-laptop">
+          <div class="player-label">
+            <span>Landscape 16:9 (YouTube & FB)</span>
+            <a id="btn-dl-laptop" class="btn-download" href="#" download>Download MP4</a>
+          </div>
+          <div class="video-frame wide-frame">
+            <video id="video-player-laptop" controls playsinline></video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Post Box -->
+      <div class="social-box">
+        <div class="social-header">
+          <span class="social-label">Caption & Hashtags</span>
+          <button class="btn-copy" onclick="copyText('out-caption-box')">Copy Caption</button>
+        </div>
+        <textarea id="out-caption-box" class="social-textarea" readonly></textarea>
       </div>
     </div>
   </section>
+
 </main>
 
-<!-- ── PREVIEW SCENES MODAL ──────────────────────────────────── -->
-<div id="preview-modal" class="modal-backdrop hidden" onclick="closePreviewModal(event)">
-  <div class="modal-dialog glass-panel" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <div>
-        <span class="modal-badge">AI SCRIPT BREAKDOWN</span>
-        <h3 class="modal-title" id="preview-modal-title">Scene Outline & Narration</h3>
-      </div>
-      <button class="modal-close-btn" onclick="closePreviewModal()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+<!-- ── PROJECTS MODAL ────────────────────────────────────────── -->
+<div id="projects-modal" class="modal-overlay hidden" onclick="toggleProjectsModal()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-top">
+      <h3>Recent Projects</h3>
+      <button class="btn-close" onclick="toggleProjectsModal()">✕</button>
     </div>
-    <div class="modal-body" id="preview-modal-content">
-      <div class="loading-spinner-box">
-        <div class="studio-spinner"></div>
-        <p>Structuring story into scenes with Gemini...</p>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-ghost-studio" onclick="closePreviewModal()">Close</button>
-      <button class="btn-gold-studio" onclick="confirmPreviewAndGenerate()">
-        Confirm & Start Video Production
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ── PRICING & SUBSCRIPTION MODAL (FOR SAAS LAUNCH) ────────── -->
-<div id="pricing-modal" class="modal-backdrop hidden" onclick="closePricingModal(event)">
-  <div class="modal-dialog glass-panel pricing-modal-dialog" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <div>
-        <span class="modal-badge">MEMBERSHIP & MONETIZATION</span>
-        <h3 class="modal-title">Choose Your Creator Plan</h3>
-      </div>
-      <button class="modal-close-btn" onclick="closePricingModal()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="pricing-cards-grid">
-        <!-- Free Starter -->
-        <div class="pricing-tier-card">
-          <div class="tier-head">
-            <h4 class="tier-name">Free Starter</h4>
-            <div class="tier-price">$0 <span>/ month</span></div>
-            <p class="tier-khr">0 ៛ / ខែ</p>
-          </div>
-          <ul class="tier-features">
-            <li>5 AI Khmer Story generations / mo</li>
-            <li>gTTS Voice Engine</li>
-            <li>Standard 720p Resolution</li>
-            <li>Watermark Included</li>
-          </ul>
-          <button class="btn-tier-select" onclick="selectPlan('free')">Current Plan</button>
-        </div>
-
-        <!-- Creator Pro -->
-        <div class="pricing-tier-card featured">
-          <div class="tier-popular-tag">MOST POPULAR</div>
-          <div class="tier-head">
-            <h4 class="tier-name">Creator Pro</h4>
-            <div class="tier-price">$19 <span>/ month</span></div>
-            <p class="tier-khr">75,000 ៛ / ខែ</p>
-          </div>
-          <ul class="tier-features">
-            <li>Unlimited AI Story Generations</li>
-            <li>Google WaveNet & ElevenLabs Khmer TTS</li>
-            <li>Gemini Imagen 3 Ultra Artwork</li>
-            <li>1080p HD Full 9:16 + 16:9 Exports</li>
-            <li>No Watermarks · Commercial License</li>
-            <li>Auto Social SEO & Caption Generator</li>
-          </ul>
-          <button class="btn-tier-select featured-btn" onclick="selectPlan('pro')">Get Pro Access</button>
-        </div>
-
-        <!-- Studio Enterprise -->
-        <div class="pricing-tier-card">
-          <div class="tier-head">
-            <h4 class="tier-name">Studio Agency</h4>
-            <div class="tier-price">$49 <span>/ month</span></div>
-            <p class="tier-khr">195,000 ៛ / ខែ</p>
-          </div>
-          <ul class="tier-features">
-            <li>Everything in Creator Pro</li>
-            <li>Batch Video Pipeline Generation</li>
-            <li>Cloudflare R2 Instant Video CDN</li>
-            <li>Custom Brand Logos & Intro/Outro</li>
-            <li>API Access for Direct Publishing</li>
-          </ul>
-          <button class="btn-tier-select" onclick="selectPlan('agency')">Contact Studio</button>
-        </div>
-      </div>
+    <div class="modal-content" id="project-history-list">
+      <p class="empty-text">No previous videos yet.</p>
     </div>
   </div>
 </div>
 
 <!-- ── TOAST NOTIFICATIONS ───────────────────────────────────── -->
-<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+<div id="toast-container"></div>
 
-<!-- Scripts -->
 <script src="app.js"></script>
 </body>
 </html>
