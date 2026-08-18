@@ -81,14 +81,16 @@ def retry(
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             delay = base_delay
+            last_exc = None
             for attempt in range(1, max_attempts + 1):
                 try:
                     return func(*args, **kwargs)
                 except exceptions as exc:
+                    last_exc = exc
                     exc_str = str(exc).lower()
                     if "429" in exc_str or "quota exceeded" in exc_str or "rate limit" in exc_str:
-                        logger.warning(f"[WARN] API Rate Limit hit! Sleeping for 35s to cool down...")
-                        time.sleep(35)
+                        logger.warning(f"[WARN] API Rate Limit hit! Sleeping for 65s to fully reset quota...")
+                        time.sleep(65)
                         # Don't increment standard delay for 429, just loop again
                         continue
 
@@ -102,6 +104,9 @@ def retry(
                     )
                     time.sleep(delay)
                     delay *= backoff
+            if last_exc:
+                logger.error(f"[ERROR] {func.__name__} failed after exhausting retries due to rate limits.")
+                raise last_exc
         return wrapper  # type: ignore
     return decorator
 
