@@ -115,11 +115,21 @@ async function loadRecentProjects() {
 async function handleGenerate() {
   const prompt = currentMode === 'paste_story' ? $('story-text')?.value?.trim() : $('story-prompt')?.value?.trim();
   if (!prompt || prompt.length < 8) {
-    showToast('Please enter a story or prompt first.');
+    showToast('Please enter a story or prompt first (at least 8 characters).');
     return;
   }
 
   const apiUrl = getApiUrl();
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  if (!apiUrl && !isLocal) {
+    showToast('Please enter your Render Backend API URL below to connect.');
+    const details = document.querySelector('.adv-collapse');
+    if (details) details.open = true;
+    $('api-url-input')?.focus();
+    return;
+  }
+
   const numScenes = parseInt($('num-scenes')?.value || '6', 10);
   const exportProfile = $('export-profile')?.value || 'both';
   const ttsProvider = $('tts-provider')?.value || 'gtts';
@@ -145,17 +155,21 @@ async function handleGenerate() {
       })
     });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      if (res.status === 404) {
+        throw new Error(`Backend not found at ${apiUrl || window.location.origin}. Please set your Render API URL in Advanced Settings.`);
+      }
+      throw new Error(`HTTP ${res.status}`);
+    }
     const data = await res.json();
     currentJobId = data.job_id;
 
     listenToSseProgress(apiUrl, currentJobId);
   } catch (err) {
-    showToast(`Error: ${err.message}`);
+    showToast(`${err.message}`);
     updateProgress(0, err.message, 'failed', 1);
   }
 }
-
 function listenToSseProgress(apiUrl, jobId) {
   if (currentEventSource) currentEventSource.close();
   const sseUrl = `${apiUrl}/api/progress/${jobId}`;
