@@ -160,8 +160,16 @@ class GenerateStoryRequest(BaseModel):
 # SSE PROGRESS EMITTER
 # ─────────────────────────────────────────────
 
+
+main_loop: Optional[asyncio.AbstractEventLoop] = None
+
+@app.on_event("startup")
+async def startup_event():
+    global main_loop
+    main_loop = asyncio.get_running_loop()
+    print("[API] Event loop captured for worker threads")
+
 def emit(job_id: str, step: int, module: str, status: str, message: str, pct: int) -> None:
-    """Push a progress event into the SSE queue and persist to Supabase."""
     event = {
         "step": step,
         "module": module,
@@ -170,31 +178,21 @@ def emit(job_id: str, step: int, module: str, status: str, message: str, pct: in
         "progress_pct": pct,
         "timestamp": datetime.now().isoformat(),
     }
-    # Update in-memory state
     if job_id in jobs:
-        jobs[job_id].update({"step": step, "progress_pct": pct, "message": message})
+        jobs[job_id].update({"step": step, "progress_pct": pct, "message": message, "status": status})
 
-    # Persist to Supabase (non-blocking — errors are swallowed)
     if SUPABASE_ENABLED:
         try:
             sb.insert_event(job_id, step, module, status, message, pct)
-        except Exception as exc:
-            print(f"[Supabase] emit failed: {exc}")
-
-    # Push to SSE queue
-    q = job_queues.get(job_id)
-    if q:
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.run_coroutine_threadsafe(q.put(event), loop)
-        except RuntimeError:
+        except Exception:
             pass
 
-
-# ─────────────────────────────────────────────
-# PIPELINE RUNNER (runs in a background thread)
-# ─────────────────────────────────────────────
+    q = job_queues.get(job_id)
+    if q and main_loop and main_loop.is_running():
+        try:
+            asyncio.run_coroutine_threadsafe(q.put(event), main_loop)
+        except Exception:
+            pass
 
 def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
     """
@@ -359,7 +357,8 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         # Signal SSE stream to close
         q = job_queues.get(job_id)
         if q:
-            asyncio.run_coroutine_threadsafe(q.put(None), asyncio.get_event_loop())
+            if main_loop and main_loop.is_running():
+                asyncio.run_coroutine_threadsafe(q.put(None), main_loop)
 
 
 # ─────────────────────────────────────────────

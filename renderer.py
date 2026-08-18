@@ -151,7 +151,11 @@ def apply_ken_burns(
             left = int(extra_x * (1.0 - prog))
             return np.array(img.crop((left, 0, left + target_w, target_h)))
 
-    return clip.fl(lambda gf, t: make_frame(t), apply_to=["mask"])
+    if hasattr(clip, "transform"):
+        return clip.transform(lambda gf, t: make_frame(t))
+    elif hasattr(clip, "fl"):
+        return clip.fl(lambda gf, t: make_frame(t), apply_to=["mask"])
+    return clip
 
 
 def build_scene_clip(
@@ -188,7 +192,12 @@ def build_scene_clip(
 
     if subtitle_enabled and config.SUBTITLE_ENABLED:
         text = scene.khmer_narration
-        animated_clip = animated_clip.fl(lambda gf, t: add_subtitle_to_frame(gf(t), text, target_w, target_h))
+        if hasattr(animated_clip, "image_transform"):
+            animated_clip = animated_clip.image_transform(lambda frame: add_subtitle_to_frame(frame, text, target_w, target_h))
+        elif hasattr(animated_clip, "fl_image"):
+            animated_clip = animated_clip.fl_image(lambda frame: add_subtitle_to_frame(frame, text, target_w, target_h))
+        elif hasattr(animated_clip, "fl"):
+            animated_clip = animated_clip.fl(lambda gf, t: add_subtitle_to_frame(gf(t), text, target_w, target_h))
 
     audio_clip = AudioFileClip(str(audio_path))
     if hasattr(animated_clip, "with_audio"):
