@@ -244,27 +244,44 @@ def run_pipeline_thread(job_id: str, req: RunRequest) -> None:
         state.enriched_scenes = [EnrichedScene(**s.model_dump()) for s in scene_list.scenes]
         emit(job_id, 1, "writer", "done", f"Story written: '{scene_list.story_title}'", 18)
 
-        # ── STEP 2: TTS Audio ────────────────────
-        emit(job_id, 2, "audio_engine", "running", "Generating Khmer TTS audio…", 20)
+        # ── STEP 2 & 3: Audio and Image Generation (Parallel) ────────
+        emit(job_id, 2, "generation", "running", "Generating Audio and AI Images concurrently…", 20)
         from audio_engine import AudioEngine
-        audio_engine = AudioEngine()
-        enriched = audio_engine.process_all(scene_list)
-        state_map = {e.scene_id: e for e in enriched}
-        for e in enriched:
-            state.mark_audio_done(e.scene_id)
-        state.enriched_scenes = sorted(state_map.values(), key=lambda x: x.scene_id)
-        emit(job_id, 2, "audio_engine", "done", "All audio generated", 36)
-
-        # ── STEP 3: Image Generation ─────────────
-        emit(job_id, 3, "visual_engine", "running", "Generating AI images…", 38)
         from visual_engine import VisualEngine
+        import concurrent.futures
+
+        audio_engine = AudioEngine()
         vis_engine = VisualEngine()
-        updated = vis_engine.process_all(state.enriched_scenes)
-        state_map2 = {e.scene_id: e for e in updated}
-        for e in updated:
-            state.mark_image_done(e.scene_id)
-        state.enriched_scenes = sorted(state_map2.values(), key=lambda x: x.scene_id)
-        emit(job_id, 3, "visual_engine", "done", "All scene images generated", 60)
+
+        def generate_audio():
+            return audio_engine.process_all(scene_list)
+
+        def generate_visuals():
+            # visual_engine processes EnrichedScene objects
+            return vis_engine.process_all(state.enriched_scenes)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            future_audio = executor.submit(generate_audio)
+            future_visual = executor.submit(generate_visuals)
+            
+            audio_results = future_audio.result()
+            visual_results = future_visual.result()
+
+        # Merge results since they were processed independently
+        # visual_engine mutated the existing state.enriched_scenes with image_paths
+        # audio_engine returned a new list with audio_paths and durations
+        visual_map = {s.scene_id: s for s in state.enriched_scenes}
+        merged_scenes = []
+        for audio_scene in audio_results:
+            merged = audio_scene
+            if merged.scene_id in visual_map:
+                merged.image_path = visual_map[merged.scene_id].image_path
+            state.mark_audio_done(merged.scene_id)
+            state.mark_image_done(merged.scene_id)
+            merged_scenes.append(merged)
+            
+        state.enriched_scenes = merged_scenes
+        emit(job_id, 3, "generation", "done", "All audio and images generated", 60)
 
         # Collect image thumbnails for UI gallery
         scene_previews = []

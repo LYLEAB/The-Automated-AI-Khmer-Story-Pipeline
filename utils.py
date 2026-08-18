@@ -72,7 +72,7 @@ logger = setup_logger("core")
 
 
 def retry(
-    max_attempts: int = config.MAX_RETRY_ATTEMPTS,
+    max_attempts: int = 5,
     base_delay: float = config.RETRY_BASE_DELAY_SECONDS,
     backoff: float = 2.0,
     exceptions: tuple = (Exception,),
@@ -85,9 +85,17 @@ def retry(
                 try:
                     return func(*args, **kwargs)
                 except exceptions as exc:
+                    exc_str = str(exc).lower()
+                    if "429" in exc_str or "quota exceeded" in exc_str or "rate limit" in exc_str:
+                        logger.warning(f"[WARN] API Rate Limit hit! Sleeping for 35s to cool down...")
+                        time.sleep(35)
+                        # Don't increment standard delay for 429, just loop again
+                        continue
+
                     if attempt == max_attempts:
                         logger.error(f"[ERROR] {func.__name__} failed after {max_attempts} attempts: {exc}")
                         raise
+                        
                     logger.warning(
                         f"[WARN] {func.__name__} attempt {attempt}/{max_attempts} failed: {exc}. "
                         f"Retrying in {delay:.1f}s..."

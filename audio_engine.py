@@ -157,6 +157,8 @@ class AudioEngine:
         enriched: List[EnrichedScene] = []
         out_dir = output_dir or config.AUDIO_DIR
 
+        import concurrent.futures
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -165,11 +167,21 @@ class AudioEngine:
             TimeElapsedColumn(),
         ) as progress:
             task = progress.add_task("[cyan]Synthesizing Khmer TTS...[/cyan]", total=len(scene_list.scenes))
-            for scene in scene_list.scenes:
-                e = self.process_scene(scene, output_dir=out_dir, skip_existing=skip_existing)
-                enriched.append(e)
-                progress.advance(task)
+            
+            # Use max_workers=3 to avoid rate limits while still speeding up
+            with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+                futures = {
+                    executor.submit(self.process_scene, scene, out_dir, skip_existing): scene
+                    for scene in scene_list.scenes
+                }
+                
+                for future in concurrent.futures.as_completed(futures):
+                    e = future.result()
+                    enriched.append(e)
+                    progress.advance(task)
 
+        # Re-sort by scene_id since as_completed returns in arbitrary order
+        enriched.sort(key=lambda x: x.scene_id)
         return enriched
 
     def process_scenes(self, scene_list: SceneList, output_dir: Optional[Path] = None, skip_existing: bool = False) -> List[EnrichedScene]:

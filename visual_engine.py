@@ -156,6 +156,8 @@ class VisualEngine:
         skip_existing: bool = False,
     ) -> List[EnrichedScene]:
         config.IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+        import concurrent.futures
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -164,9 +166,16 @@ class VisualEngine:
             TimeElapsedColumn(),
         ) as progress:
             task = progress.add_task("[cyan]Generating scene artwork...[/cyan]", total=len(scenes))
-            for scene in scenes:
-                self.process_scene(scene, skip_existing=skip_existing)
-                progress.advance(task)
+            
+            with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+                futures = {
+                    executor.submit(self.process_scene, scene, skip_existing): scene
+                    for scene in scenes
+                }
+                for future in concurrent.futures.as_completed(futures):
+                    future.result() # updates the scene object in-place
+                    progress.advance(task)
+                    
         return scenes
 
     def process_scenes(self, scenes: List[EnrichedScene], skip_existing: bool = False) -> List[EnrichedScene]:
